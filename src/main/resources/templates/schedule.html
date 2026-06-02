@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments/head :: head('Schedule')}"></head>
+
+    <body class="app-body">
+        <div class="app-shell">
+            <th:block
+                th:replace="~{fragments/sidebar :: sidebar('schedule')}"></th:block>
+
+            <main class="main-content app-main">
+                <header class="page-header">
+                    <div>
+                        <p class="page-eyebrow">PLAN YOUR WEEK</p>
+                        <h1 class="page-title">SCHEDULE</h1>
+                    </div>
+
+                    <a th:href="@{/schedule/add}" class="btn btn-accent">
+                        + ADD EVENT
+                    </a>
+                </header>
+
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">UPCOMING EVENTS</h2>
+                    </div>
+
+                    <div th:if="${agendas == null or #lists.isEmpty(agendas)}"
+                        class="empty-inline">
+                        Belum ada jadwal.
+                        <a th:href="@{/schedule/add}">Tambah event pertama →</a>
+                    </div>
+
+                    <div class="agenda-list-mini"
+                        th:if="${agendas != null and !#lists.isEmpty(agendas)}">
+                        <a class="agenda-mini-card"
+                            th:each="agenda : ${agendas}"
+                            th:href="@{/schedule}">
+                            <div class="agenda-date-badge">
+                                <span>--</span>
+                                <span>---</span>
+                            </div>
+
+                            <div class="agenda-info">
+                                <p class="agenda-title"
+                                    th:text="${agenda.title}">Event Title</p>
+                                <p class="agenda-meta"
+                                    th:text="${agenda.dressCode != null ? agenda.dressCode : 'Casual'}">Casual</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

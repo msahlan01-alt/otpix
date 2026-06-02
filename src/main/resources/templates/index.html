@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments/head :: head('Home')}"></head>
+
+    <body class="landing-body">
+        <nav class="landing-nav">
+            <a th:href="@{/}" class="logo-link">FASHIONCE</a>
+
+            <div class="landing-nav-links">
+                <a th:href="@{/auth/login}" class="btn btn-outline">LOGIN</a>
+                <a th:href="@{/auth/register}" class="btn btn-accent">DAFTAR
+                    GRATIS</a>
+            </div>
+        </nav>
+
+        <main>
+            <section class="hero-section">
+                <div class="hero-content">
+                    <p class="hero-eyebrow">✦ SMART WARDROBE APP</p>
+
+                    <h1 class="hero-title">
+                        FEEL YOUNG,<br />
+                        BE UNSTOPPABLE.
+                    </h1>
+
+                    <p class="hero-desc">
+                        Kelola koleksi pakaianmu, rencanakan jadwal berpakaian,
+                        dan dapatkan rekomendasi outfit AI yang sesuai setiap
+                        momen.
+                    </p>
+
+                    <div class="hero-cta">
+                        <a th:href="@{/auth/register}"
+                            class="btn btn-accent btn-lg">
+                            MULAI SEKARANG →
+                        </a>
+
+                        <a th:href="@{/auth/login}"
+                            class="btn btn-outline btn-lg">
+                            SUDAH PUNYA AKUN
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-graphic">
+                    <div class="hero-badge">
+                        <span>YOUR<br />STYLE,<br />YOUR<br />RULES.</span>
+                    </div>
+
+                    <div class="hero-badge-sm">✦ AI POWERED</div>
+                </div>
+            </section>
+
+            <section class="features-section">
+                <article class="feature-card">
+                    <div class="feature-icon">👗</div>
+                    <h3 class="feature-title">WARDROBE</h3>
+                    <p class="feature-desc">
+                        Katalog digital seluruh koleksi pakaianmu dengan foto,
+                        warna, kondisi, dan tag.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3 class="feature-title">SCHEDULE</h3>
+                    <p class="feature-desc">
+                        Rencanakan event dengan dress code dan tipe lokasi agar
+                        selalu tampil tepat.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3 class="feature-title">GENERATE</h3>
+                    <p class="feature-desc">
+                        AI memilihkan outfit terbaik dari wardrobemu berdasarkan
+                        event dan dress code.
+                    </p>
+                </article>
+            </section>
+        </main>
+
+        <footer class="landing-footer">
+            <p class="footer-logo">FASHIONCE</p>
+            <p class="footer-copy">© 2026 FASHIONCE. All rights reserved.</p>
+        </footer>
+
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

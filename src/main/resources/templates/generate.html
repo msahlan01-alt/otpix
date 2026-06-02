@@ -1,0 +1,39 @@
+<form class="auth-form" method="post" th:action="@{/generate}"
+    data-generate-form>
+    <div class="form-group">
+        <label for="occasion">OCCASION</label>
+        <select id="occasion" name="occasion" required>
+            <option value>Pilih occasion</option>
+            <option value="Casual Day">Casual Day</option>
+            <option value="Office">Office</option>
+            <option value="Night Out">Night Out</option>
+            <option value="Date">Date</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="mood">MOOD</label>
+        <select id="mood" name="mood" required>
+            <option value>Pilih mood</option>
+            <option value="Confident">Confident</option>
+            <option value="Cozy">Cozy</option>
+            <option value="Edgy">Edgy</option>
+            <option value="Minimal">Minimal</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-accent btn-full">
+        GENERATE OUTFIT
+    </button>
+</form>
+
+<div class="empty-inline" th:if="${recommendation == null}">
+    Pilih occasion dan mood, lalu generate outfit.
+</div>
+
+<div class="dashboard-section" th:if="${recommendation != null}">
+    <h2 class="section-title">HASIL REKOMENDASI</h2>
+    <p class="section-desc" th:text="${recommendation}">
+        Recommendation
+    </p>
+</div>

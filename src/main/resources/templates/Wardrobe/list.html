@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http:
+    <head th:replace="~{fragments/head :: head('Wardrobe')}"></head>
+    <body>
+        <div class="app-shell">
+            <th:block th:replace="~{fragments/sidebar :: sidebar}"></th:block>
+            <main class="main-content">
+
+                <div th:if="${success}" class="flash flash-success">
+                    <span th:text="${success}"></span>
+                    <button class="flash-close"
+                        onclick="this.parentElement.remove()">×</button>
+                </div>
+                <div th:if="${error}" class="flash flash-error">
+                    <span th:text="${error}"></span>
+                    <button class="flash-close"
+                        onclick="this.parentElement.remove()">×</button>
+                </div>
+
+                <!-- Header -->
+                <div class="page-header">
+                    <div>
+                        <p class="page-eyebrow">MY COLLECTION</p>
+                        <h1 class="page-title">WARDROBE
+                            <span class="page-count"
+                                th:text="'(' + ${itemCount} + ')'"></span>
+                        </h1>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-outline"
+                            onclick="toggleTagPanel()">🏷 TAGS</button>
+                        <a th:href="@{/wardrobe/add}" class="btn btn-accent">
+                            <svg width="13" height="13" fill="none"
+                                stroke="currentColor" stroke-width="2.5"
+                                viewBox="0 0 24 24"><path
+                                    d="M12 5v14M5 12h14" /></svg>
+                            ADD ITEM
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tag panel (hidden by default) -->
+                <div class="tag-panel" id="tagPanel" style="display:none;">
+                    <div class="tag-panel-inner">
+                        <div class="tag-list">
+                            <span class="tag-chip" th:each="tag : ${tags}"
+                                th:text="'#' + ${tag.name}"
+                                th:data-tag="${tag.name}"
+                                onclick="filterByTag(this)">tag</span>
+                            <span th:if="${#lists.isEmpty(tags)}"
+                                class="empty-text">Belum ada tag.</span>
+                        </div>
+                        <form th:action="@{/wardrobe/tags/add}" method="post"
+                            class="tag-add-form">
+                            <input type="text" name="name" class="form-input"
+                                placeholder="Nama tag baru..." required />
+                            <button type="submit"
+                                class="btn btn-sm btn-outline">+ ADD</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="wardrobe-layout">
+                    <!-- Category sidebar -->
+                    <aside class="cat-sidebar">
+                        <div class="cat-search-wrap">
+                            <input type="text" id="wardrobeSearch"
+                                class="search-input"
+                                placeholder="SEARCH..."
+                                oninput="filterWardrobe(this.value)" />
+                        </div>
+                        <a th:href="@{/wardrobe(category='ALL')}"
+                            class="cat-link"
+                            th:classappend="${activeCategory == 'ALL' ? ' active' : ''}">
+                            <span>ALL ITEMS</span>
+                            <span class="cat-count"
+                                th:text="${itemCount}">0</span>
+                        </a>
+                        <a th:each="cat : ${categories}"
+                            th:href="@{/wardrobe(category=${cat})}"
+                            th:classappend="${activeCategory == cat ? ' active' : ''}"
+                            class="cat-link">
+                            <span th:text="${cat}">TOPS</span>
+                            <span class="cat-count"
+                                th:text="${allItems.?[category.name == cat].size()}">0</span>
+                        </a>
+                    </aside>
+
+                    <!-- Grid -->
+                    <div class="catalog-wrap">
+                        <div class="catalog-toolbar">
+                            <span class="item-count"
+                                th:text="${items.size()} + ' item'">0
+                                item</span>
+                            <div class="sort-label">SORTED BY NEWEST</div>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(items)}"
+                            class="empty-state">
+                            <p class="empty-title">EMPTY</p>
+                            <p class="empty-desc">Tidak ada item di kategori
+                                ini</p>
+                            <a th:href="@{/wardrobe/add}"
+                                class="btn btn-outline">+ TAMBAH ITEM</a>
+                        </div>
+
+                        <div class="item-grid" id="itemGrid"
+                            th:unless="${#lists.isEmpty(items)}">
+                            <div class="item-card" th:each="item : ${items}"
+                                th:data-name="${#strings.toLowerCase(item.name)}"
+                                th:data-tags="${#strings.toLowerCase(#strings.listJoin(item.tags.![name], ','))}">
+
+                                <!-- Image -->
+                                <div class="item-image">
+                                    <a
+                                        th:href="@{/wardrobe/{id}(id=${item.id})}">
+                                        <img th:if="${item.imageUrl != null}"
+                                            th:src="@{${item.imageUrl}}"
+                                            th:alt="${item.name}"
+                                            class="item-img" />
+                                        <div
+                                            th:unless="${item.imageUrl != null}"
+                                            class="item-placeholder"
+                                            th:style="'background:linear-gradient(135deg,' + ${item.color} + '40,' + ${item.secondaryColor} + '20)'">
+                                            <span class="item-emoji">
+                                                <th:block
+                                                    th:switch="${item.category.name}">
+                                                    <span
+                                                        th:case="'TOPS'">👕</span><span
+                                                        th:case="'BOTTOMS'">👖</span>
+                                                    <span
+                                                        th:case="'OUTERWEAR'">🧥</span><span
+                                                        th:case="'SHOES'">👟</span>
+                                                    <span
+                                                        th:case="'ACCESSORIES'">👜</span><span
+                                                        th:case="'DRESSES'">👗</span>
+                                                    <span th:case="*">👔</span>
+                                                </th:block>
+                                            </span>
+                                            <div class="color-dots">
+                                                <span class="color-dot"
+                                                    th:style="'background:' + ${item.color}"></span>
+                                                <span class="color-dot"
+                                                    th:if="${item.secondaryColor != null}"
+                                                    th:style="'background:' + ${item.secondaryColor}"></span>
+                                            </div>
+                                        </div>
+                                    </a>
+
+                                    <!-- Condition badge -->
+                                    <span class="cond-badge"
+                                        th:classappend="'cond-' + ${#strings.toLowerCase(item.condition).replace(' ','-')}"
+                                        th:text="${item.condition}">Good</span>
+
+                                    <!-- Favorite toggle -->
+                                    <button class="fav-btn"
+                                        th:classappend="${item.favorite ? ' active' : ''}"
+                                        th:data-id="${item.id}"
+                                        onclick="toggleFav(this)">♥</button>
+
+                                    <!-- Worn badge -->
+                                    <span class="worn-badge"
+                                        th:text="${item.timesWorn} + '× worn'">0×
+                                        worn</span>
+                                </div>
+
+                                <!-- Info -->
+                                <div class="item-info">
+                                    <a
+                                        th:href="@{/wardrobe/{id}(id=${item.id})}"
+                                        class="item-name"
+                                        th:text="${item.name}">Name</a>
+                                    <p class="item-meta"
+                                        th:text="${item.category.name} + ' · ' + ${item.fit}">Meta</p>
+                                    <div class="item-tags"
+                                        th:unless="${#lists.isEmpty(item.tags)}">
+                                        <span th:each="tag : ${item.tags}"
+                                            th:text="'#' + ${tag.name}"
+                                            class="tag-xs">tag</span>
+                                    </div>
+                                </div>
+
+                            </div><!-- /item-card -->
+                        </div><!-- /item-grid -->
+                    </div><!-- /catalog-wrap -->
+                </div><!-- /wardrobe-layout -->
+            </main>
+        </div>
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

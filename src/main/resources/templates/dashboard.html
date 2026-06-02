@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+
+    <body class="app-body">
+        <div class="app-shell">
+            <th:block
+                th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></th:block>
+
+            <main class="main-content app-main">
+                <header class="page-header">
+                    <div>
+                        <p class="page-eyebrow">WELCOME BACK</p>
+                        <h1 class="page-title"
+                            th:text="${username != null ? username : 'USER'}">
+                            USER
+                        </h1>
+                    </div>
+
+                    <a th:href="@{/Wardrobe/form}" class="btn btn-accent">
+                        + ADD ITEM
+                    </a>
+                </header>
+
+                <section class="stats-grid">
+                    <article class="stat-card">
+                        <span class="stat-label">TOTAL ITEM</span>
+                        <span class="stat-value"
+                            th:text="${itemCount != null ? itemCount : 0}">0</span>
+                        <span class="stat-sub">di wardrobe</span>
+                    </article>
+
+                    <article class="stat-card">
+                        <span class="stat-label">FAVORIT</span>
+                        <span class="stat-value"
+                            th:text="${favoriteCount != null ? favoriteCount : 0}">0</span>
+                        <span class="stat-sub">item ditandai</span>
+                    </article>
+
+                    <article class="stat-card">
+                        <span class="stat-label">TOTAL EVENT</span>
+                        <span class="stat-value"
+                            th:text="${agendaCount != null ? agendaCount : 0}">0</span>
+                        <span class="stat-sub">di schedule</span>
+                    </article>
+
+                    <article class="stat-card stat-card-accent">
+                        <span class="stat-label">MENDATANG</span>
+                        <span class="stat-value"
+                            th:text="${upcomingCount != null ? upcomingCount : 0}">0</span>
+                        <span class="stat-sub">event akan datang</span>
+                    </article>
+                </section>
+
+                <div class="dashboard-grid">
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h2 class="section-title">ITEM TERBARU</h2>
+                            <a th:href="@{/wardrobe}"
+                                class="btn btn-sm btn-outline">LIHAT SEMUA →</a>
+                        </div>
+
+                        <div
+                            th:if="${recentItems == null or #lists.isEmpty(recentItems)}"
+                            class="empty-inline">
+                            Belum ada item.
+                            <a th:href="@{/Wardrobe/form}">Tambah sekarang →</a>
+                        </div>
+
+                        <div class="mini-grid"
+                            th:if="${recentItems != null and !#lists.isEmpty(recentItems)}">
+                            <article class="mini-card"
+                                th:each="item : ${recentItems}">
+                                <a th:href="@{/wardrobe/{id}(id=${item.id})}"
+                                    class="mini-card-link">
+                                    <div class="mini-card-img">
+                                        <span class="mini-emoji">👔</span>
+                                        <span th:if="${item.favorite}"
+                                            class="mini-fav">♥</span>
+                                    </div>
+
+                                    <p class="mini-name"
+                                        th:text="${item.name}">Item Name</p>
+                                    <p class="mini-meta"
+                                        th:text="${item.category != null ? item.category : 'ITEM'}">ITEM</p>
+                                </a>
+                            </article>
+                        </div>
+                    </section>
+
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h2 class="section-title">JADWAL MENDATANG</h2>
+                            <a th:href="@{/schedule}"
+                                class="btn btn-sm btn-outline">LIHAT SEMUA →</a>
+                        </div>
+
+                        <div
+                            th:if="${upcomingAgendas == null or #lists.isEmpty(upcomingAgendas)}"
+                            class="empty-inline">
+                            Belum ada jadwal.
+                            <a th:href="@{/Schedule/form}">Tambah event →</a>
+                        </div>
+                    </section>
+
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h2 class="section-title">STATISTIK KATEGORI</h2>
+                        </div>
+
+                        <div
+                            th:if="${categoryStats == null or categoryStats.isEmpty()}"
+                            class="empty-inline">
+                            Belum ada statistik kategori.
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

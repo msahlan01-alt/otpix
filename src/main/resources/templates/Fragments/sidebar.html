@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <aside th:fragment="sidebar(activePage)" class="app-sidebar">
+            <a th:href="@{/dashboard}" class="sidebar-logo">F</a>
+
+            <nav class="sidebar-nav">
+                <a th:href="@{/dashboard}"
+                    class="sidebar-link"
+                    th:classappend="${activePage == 'dashboard'} ? ' active' : ''">
+                    HOME
+                </a>
+
+                <a th:href="@{/wardrobe}"
+                    class="sidebar-link"
+                    th:classappend="${activePage == 'wardrobe'} ? ' active' : ''">
+                    WARDROBE
+                </a>
+
+                <a th:href="@{/schedule}"
+                    class="sidebar-link"
+                    th:classappend="${activePage == 'schedule'} ? ' active' : ''">
+                    SCHEDULE
+                </a>
+
+                <a th:href="@{/generate}"
+                    class="sidebar-link"
+                    th:classappend="${activePage == 'generate'} ? ' active' : ''">
+                    GENERATE
+                </a>
+            </nav>
+
+            <a th:href="@{/auth/logout}" class="sidebar-link logout">
+                LOGOUT
+            </a>
+        </aside>
+    </body>
+</html>

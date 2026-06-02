@@ -1,0 +1,53 @@
+<form class="auth-form" method="post" th:action="@{/schedule/add}">
+    <div th:if="${error}" class="flash flash-error">
+        <span th:text="${error}">Error</span>
+    </div>
+
+    <div class="form-group">
+        <label for="title">EVENT TITLE</label>
+        <input id="title" name="title" type="text" placeholder="Campus Day"
+            required />
+    </div>
+
+    <div class="form-group">
+        <label for="eventDate">DATE</label>
+        <input id="eventDate" name="eventDate" type="date" required />
+    </div>
+
+    <div class="form-group">
+        <label for="startTime">START TIME</label>
+        <input id="startTime" name="startTime" type="time" />
+    </div>
+
+    <div class="form-group">
+        <label for="endTime">END TIME</label>
+        <input id="endTime" name="endTime" type="time" />
+    </div>
+
+    <div class="form-group">
+        <label for="dressCode">DRESS CODE</label>
+        <input id="dressCode" name="dressCode" type="text"
+            placeholder="Smart Casual" />
+    </div>
+
+    <div class="form-group">
+        <label for="eventType">EVENT TYPE</label>
+        <select id="eventType" name="eventType">
+            <option value="CASUAL">Casual</option>
+            <option value="FORMAL">Formal</option>
+            <option value="CAMPUS">Campus</option>
+            <option value="WORK">Work</option>
+            <option value="DATE">Date</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="location">LOCATION</label>
+        <input id="location" name="location" type="text"
+            placeholder="Cafe, campus, office..." />
+    </div>
+
+    <button type="submit" class="btn btn-accent btn-full">
+        SAVE EVENT
+    </button>
+</form>

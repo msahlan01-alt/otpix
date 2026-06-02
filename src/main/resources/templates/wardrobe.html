@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments/head :: head('Wardrobe')}"></head>
+
+    <body class="app-body">
+        <div class="app-shell">
+            <th:block
+                th:replace="~{fragments/sidebar :: sidebar('wardrobe')}"></th:block>
+
+            <main class="main-content app-main">
+                <header class="page-header">
+                    <div>
+                        <p class="page-eyebrow">YOUR COLLECTION</p>
+                        <h1 class="page-title">WARDROBE</h1>
+                    </div>
+
+                    <a th:href="@{/wardrobe/add}" class="btn btn-accent">
+                        + ADD ITEM
+                    </a>
+                </header>
+
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">ITEMS</h2>
+                    </div>
+
+                    <div th:if="${items == null or #lists.isEmpty(items)}"
+                        class="empty-inline">
+                        Belum ada item di wardrobe.
+                        <a th:href="@{/wardrobe/add}">Tambah item pertama →</a>
+                    </div>
+
+                    <div class="mini-grid"
+                        th:if="${items != null and !#lists.isEmpty(items)}">
+                        <article class="mini-card" th:each="item : ${items}">
+                            <div class="mini-card-img">
+                                <span class="mini-emoji">👔</span>
+                            </div>
+
+                            <p class="mini-name" th:text="${item.name}">Item
+                                Name</p>
+                            <p class="mini-meta"
+                                th:text="${item.category != null ? item.category : 'ITEM'}">ITEM</p>
+                        </article>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

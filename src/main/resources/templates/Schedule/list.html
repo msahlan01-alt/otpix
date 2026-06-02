@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http:
+    <head th:replace="~{fragments/head :: head('Schedule')}"></head>
+    <body>
+        <div class="app-shell">
+            <th:block th:replace="~{fragments/sidebar :: sidebar}"></th:block>
+            <main class="main-content">
+
+                <div th:if="${success}" class="flash flash-success">
+                    <span th:text="${success}"></span>
+                    <button class="flash-close"
+                        onclick="this.parentElement.remove()">×</button>
+                </div>
+
+                <div class="page-header">
+                    <div>
+                        <p class="page-eyebrow">PLAN YOUR WEEK</p>
+                        <h1 class="page-title">SCHEDULE</h1>
+                    </div>
+                    <a th:href="@{/schedule/add}" class="btn btn-accent">
+                        <svg width="13" height="13" fill="none"
+                            stroke="currentColor" stroke-width="2.5"
+                            viewBox="0 0 24 24"><path
+                                d="M12 5v14M5 12h14" /></svg>
+                        ADD EVENT
+                    </a>
+                </div>
+
+                <div class="schedule-layout">
+                    <!-- CALENDAR PANEL -->
+                    <div class="calendar-panel">
+                        <!-- Month nav -->
+                        <div class="cal-nav">
+                            <a
+                                th:href="@{/schedule(year=${prevYear}, month=${prevMonth})}"
+                                class="btn btn-sm btn-outline">←</a>
+                            <h2 class="cal-month-title"
+                                th:text="${monthName} + ' ' + ${currentYear}">JUNE
+                                2026</h2>
+                            <a
+                                th:href="@{/schedule(year=${nextYear}, month=${nextMonth})}"
+                                class="btn btn-sm btn-outline">→</a>
+                        </div>
+
+                        <!-- Day headers -->
+                        <div class="cal-grid">
+                            <div class="cal-header">SUN</div>
+                            <div class="cal-header">MON</div>
+                            <div class="cal-header">TUE</div>
+                            <div class="cal-header">WED</div>
+                            <div class="cal-header">THU</div>
+                            <div class="cal-header">FRI</div>
+                            <div class="cal-header">SAT</div>
+
+                            <!-- Empty cells -->
+                            <div class="cal-empty"
+                                th:each="i : ${firstDayOfWeek > 0 ? #numbers.sequence(1, firstDayOfWeek) : {0}}">
+                            </div>
+
+                            <!-- Days -->
+                            <a
+                                th:each="day : ${#numbers.sequence(1, daysInMonth)}"
+                                th:href="@{/schedule/add(date=${currentYear} + '-'
+                       + ${#strings.padStart('' + currentMonth, 2, '0')} + '-'
+                       + ${#strings.padStart('' + day, 2, '0')})}"
+                                class="cal-day"
+                                th:classappend="${day == today.dayOfMonth
+                               and currentYear == today.year
+                               and currentMonth == today.monthValue ? ' cal-today' : ''}
+                             + ${calendarData.containsKey(day) ? ' cal-has-event' : ''}">
+                                <span class="cal-day-num"
+                                    th:text="${day}">1</span>
+                                <div class="cal-event-list"
+                                    th:if="${calendarData.containsKey(day)}">
+                                    <div
+                                        th:each="ev, st : ${calendarData.get(day)}"
+                                        th:if="${st.index < 2}"
+                                        class="cal-event-chip"
+                                        th:classappend="'evt-' + ${#strings.toLowerCase(ev.eventType)}"
+                                        th:text="${ev.title}">Event</div>
+                                    <div
+                                        th:if="${calendarData.get(day).size() > 2}"
+                                        class="cal-more"
+                                        th:text="'+' + ${calendarData.get(day).size() - 2}">+1</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- UPCOMING PANEL -->
+                    <div class="upcoming-panel">
+                        <div class="upcoming-header">
+                            <h2 class="section-title">MENDATANG</h2>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(upcomingAgendas)}"
+                            class="empty-state-sm">
+                            <p>Belum ada jadwal mendatang.</p>
+                            <a th:href="@{/schedule/add}"
+                                class="btn btn-outline btn-sm">+ ADD EVENT</a>
+                        </div>
+
+                        <div class="agenda-list"
+                            th:unless="${#lists.isEmpty(upcomingAgendas)}">
+                            <div class="agenda-card"
+                                th:each="agenda : ${upcomingAgendas}">
+                                <div class="agenda-date-badge"
+                                    th:classappend="'evt-' + ${#strings.toLowerCase(agenda.eventType)}">
+                                    <span
+                                        th:text="${#temporals.format(agenda.eventDate,'dd')}">01</span>
+                                    <span
+                                        th:text="${#temporals.format(agenda.eventDate,'MMM').toUpperCase()}">JAN</span>
+                                </div>
+                                <div class="agenda-info">
+                                    <p class="agenda-title"
+                                        th:text="${agenda.title}">Title</p>
+                                    <div class="agenda-meta-row">
+                                        <span class="agenda-meta"
+                                            th:if="${agenda.startTime != null}">
+                                            🕐 <th:block
+                                                th:text="${#temporals.format(agenda.startTime,'HH:mm')}"></th:block>
+                                            –
+                                            <th:block
+                                                th:text="${#temporals.format(agenda.endTime,'HH:mm')}"></th:block>
+                                        </span>
+                                        <span class="agenda-meta">👔 <span
+                                                th:text="${agenda.dressCode}">Dress</span></span>
+                                        <span class="agenda-meta"
+                                            th:text="${agenda.locationType == 'Outdoor'} ? '🌤 Outdoor' : '🏠 Indoor'">Loc</span>
+                                    </div>
+                                </div>
+                                <div class="agenda-actions">
+                                    <span class="evt-badge"
+                                        th:classappend="'evt-' + ${#strings.toLowerCase(agenda.eventType)}"
+                                        th:text="${agenda.eventType}">TYPE</span>
+                                    <a
+                                        th:href="@{/schedule/{id}(id=${agenda.id})}"
+                                        class="btn btn-sm btn-outline">DETAIL</a>
+                                    <form
+                                        th:action="@{/generate/{id}(id=${agenda.id})}"
+                                        method="post">
+                                        <button type="submit"
+                                            class="btn btn-sm btn-accent">✨</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

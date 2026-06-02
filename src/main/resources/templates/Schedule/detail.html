@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http:
+    <head th:replace="~{fragments/head :: head(${agenda.title})}"></head>
+    <body>
+        <div class="app-shell">
+            <th:block th:replace="~{fragments/sidebar :: sidebar}"></th:block>
+            <main class="main-content">
+
+                <div th:if="${success}" class="flash flash-success">
+                    <span th:text="${success}"></span>
+                    <button class="flash-close"
+                        onclick="this.parentElement.remove()">×</button>
+                </div>
+
+                <!-- Header -->
+                <div class="page-header">
+                    <div>
+                        <p class="page-eyebrow">SCHEDULE → DETAIL</p>
+                        <h1 class="page-title" th:text="${agenda.title}">Event
+                            Title</h1>
+                    </div>
+                    <div class="header-actions">
+                        <a th:href="@{/schedule/{id}/edit(id=${agenda.id})}"
+                            class="btn btn-outline">✏ EDIT</a>
+                        <form
+                            th:action="@{/schedule/{id}/delete(id=${agenda.id})}"
+                            method="post"
+                            onsubmit="return confirm('Hapus event ini?')">
+                            <button type="submit" class="btn btn-danger">🗑
+                                HAPUS</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Event Info -->
+                <div class="detail-section-wrap">
+                    <div class="evt-detail-header"
+                        th:classappend="'evt-bg-' + ${#strings.toLowerCase(agenda.eventType)}">
+                        <span class="evt-badge-lg"
+                            th:classappend="'evt-' + ${#strings.toLowerCase(agenda.eventType)}"
+                            th:text="${agenda.eventType}">TYPE</span>
+                        <h2 class="evt-detail-title"
+                            th:text="${agenda.title}">Title</h2>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="detail-card">
+                            <span class="detail-label">📅 TANGGAL</span>
+                            <span class="detail-value"
+                                th:text="${#temporals.format(agenda.eventDate,'EEEE, dd MMMM yyyy')}">Date</span>
+                        </div>
+                        <div class="detail-card"
+                            th:if="${agenda.startTime != null}">
+                            <span class="detail-label">🕐 WAKTU</span>
+                            <span class="detail-value"
+                                th:text="${#temporals.format(agenda.startTime,'HH:mm')} + ' — ' + ${#temporals.format(agenda.endTime,'HH:mm')}">Time</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-label">👔 DRESS CODE</span>
+                            <span class="detail-value"
+                                th:text="${agenda.dressCode}">Dress Code</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-label">📍 LOKASI</span>
+                            <span class="detail-value"
+                                th:text="${agenda.locationType == 'Outdoor'} ? '🌤️ Outdoor' : '🏠 Indoor'">Location</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Section -->
+                <div class="generate-cta" th:if="${recommendation == null}">
+                    <div class="generate-cta-inner">
+                        <h3 class="generate-cta-title">BELUM ADA OUTFIT
+                            RECOMMENDATION</h3>
+                        <p class="generate-cta-desc">
+                            Klik tombol di bawah untuk membiarkan AI memilihkan
+                            outfit terbaik dari wardrobemu!
+                        </p>
+                        <form th:action="@{/generate/{id}(id=${agenda.id})}"
+                            method="post">
+                            <button type="submit"
+                                class="btn btn-accent btn-lg">✨ GENERATE
+                                OUTFIT</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Recommendation Result -->
+                <div class="recommendation-section"
+                    th:if="${recommendation != null}">
+                    <div class="rec-header">
+                        <h3 class="section-title">✨ OUTFIT RECOMMENDATION</h3>
+                        <div class="rec-actions">
+                            <form th:action="@{/generate/{id}(id=${agenda.id})}"
+                                method="post">
+                                <button type="submit"
+                                    class="btn btn-sm btn-outline">🔄
+                                    REGENERATE</button>
+                            </form>
+                        </div>
+                    </div>
+                    <p class="rec-notes"
+                        th:text="${recommendation.notes}">Notes</p>
+                    <p class="rec-date">
+                        Digenerate: <span
+                            th:text="${#temporals.format(recommendation.generatedAt,'dd MMM yyyy HH:mm')}">Date</span>
+                    </p>
+
+                    <div class="outfit-grid">
+                        <div class="outfit-item-card"
+                            th:each="oi : ${recommendation.outfitItems}">
+                            <div class="outfit-role-label"
+                                th:text="${oi.role}">ROLE</div>
+                            <div class="outfit-img-wrap">
+                                <img th:if="${oi.clothingItem.imageUrl != null}"
+                                    th:src="@{${oi.clothingItem.imageUrl}}"
+                                    th:alt="${oi.clothingItem.name}"
+                                    class="outfit-img" />
+                                <div
+                                    th:unless="${oi.clothingItem.imageUrl != null}"
+                                    class="outfit-placeholder"
+                                    th:style="'background:linear-gradient(135deg,' + ${oi.clothingItem.color} + '40,' + ${oi.clothingItem.secondaryColor} + '20)'">
+                                    <span>
+                                        <th:block
+                                            th:switch="${oi.clothingItem.category.name}">
+                                            <span
+                                                th:case="'TOPS'">👕</span><span
+                                                th:case="'BOTTOMS'">👖</span>
+                                            <span
+                                                th:case="'OUTERWEAR'">🧥</span><span
+                                                th:case="'SHOES'">👟</span>
+                                            <span
+                                                th:case="'ACCESSORIES'">👜</span><span
+                                                th:case="'DRESSES'">👗</span>
+                                            <span th:case="*">👔</span>
+                                        </th:block>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="outfit-item-info">
+                                <a
+                                    th:href="@{/wardrobe/{id}(id=${oi.clothingItem.id})}"
+                                    class="outfit-item-name"
+                                    th:text="${oi.clothingItem.name}">Name</a>
+                                <p class="outfit-item-meta"
+                                    th:text="${oi.clothingItem.category.name} + ' · ' + ${oi.clothingItem.condition}">Meta</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

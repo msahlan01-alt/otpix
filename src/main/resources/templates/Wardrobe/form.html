@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http:
+    <head
+        th:replace="~{fragments/head :: head(${isEdit} ? 'Edit Item' : 'Tambah Item')}"></head>
+    <body>
+        <div class="app-shell">
+            <th:block th:replace="~{fragments/sidebar :: sidebar}"></th:block>
+            <main class="main-content">
+
+                <div class="page-header">
+                    <div>
+                        <p class="page-eyebrow">MY COLLECTION</p>
+                        <h1 class="page-title"
+                            th:text="${isEdit} ? 'EDIT ITEM' : 'ADD ITEM'">ADD
+                            ITEM</h1>
+                    </div>
+                    <a th:href="@{/wardrobe}" class="btn btn-outline">←
+                        KEMBALI</a>
+                </div>
+
+                <div class="form-page-wrap">
+                    <form
+                        th:action="${isEdit} ? @{/wardrobe/{id}/edit(id=${item.id})} : @{/wardrobe/add}"
+                        method="post" enctype="multipart/form-data"
+                        th:object="${form}" novalidate id="itemForm">
+
+                        <!-- Upload foto -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">FOTO ITEM</h3>
+                            <div class="upload-area" id="uploadArea">
+                                <div id="uploadPlaceholder">
+                                    <svg width="32" height="32" fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path
+                                            d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" /><line
+                                            x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    <p>KLIK ATAU DROP FOTO DI SINI</p>
+                                    <p class="upload-sub">JPG, PNG, WEBP — Maks.
+                                        10MB</p>
+                                </div>
+                                <img id="imagePreview" alt="Preview"
+                                    th:if="${isEdit and item.imageUrl != null}"
+                                    th:src="@{${item.imageUrl}}"
+                                    class="upload-preview" />
+                            </div>
+                            <input type="file" id="imageFile" name="imageFile"
+                                accept="image/*" class="hidden"
+                                onchange="previewImage(this)" />
+                        </div>
+
+                        <!-- Info Dasar -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">INFORMASI DASAR</h3>
+                            <div class="form-grid">
+                                <div class="form-group form-col-2">
+                                    <label class="form-label"
+                                        for="itemName">NAMA ITEM *</label>
+                                    <input type="text" id="itemName"
+                                        th:field="*{name}" class="form-input"
+                                        placeholder="e.g. Black Oversized Hoodie"
+                                        required />
+                                    <span th:if="${#fields.hasErrors('name')}"
+                                        class="form-error"
+                                        th:errors="*{name}">Error</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="catSelect">TIPE / KATEGORI
+                                        *</label>
+                                    <select id="catSelect"
+                                        th:field="*{categoryName}"
+                                        class="form-select" required>
+                                        <option value>-- Pilih Kategori
+                                            --</option>
+                                        <option th:each="cat : ${categories}"
+                                            th:value="${cat}"
+                                            th:text="${cat}">TOPS</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="fitSelect">FIT</label>
+                                    <select id="fitSelect" th:field="*{fit}"
+                                        class="form-select">
+                                        <option th:each="f : ${fits}"
+                                            th:value="${f}"
+                                            th:text="${f}">Regular</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="condSelect">KONDISI</label>
+                                    <select id="condSelect"
+                                        th:field="*{condition}"
+                                        class="form-select">
+                                        <option th:each="c : ${conditions}"
+                                            th:value="${c}"
+                                            th:text="${c}">Good</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="wornInput">SUDAH DIPAKAI
+                                        (kali)</label>
+                                    <input type="number" id="wornInput"
+                                        th:field="*{timesWorn}"
+                                        class="form-input" min="0" max="9999" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Warna -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">WARNA</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">WARNA
+                                        UTAMA</label>
+                                    <div class="color-row">
+                                        <input type="color" th:field="*{color}"
+                                            id="colorPicker1"
+                                            class="color-picker"
+                                            oninput="syncColorToText('colorPicker1','colorText1')" />
+                                        <input type="text" id="colorText1"
+                                            class="form-input"
+                                            th:value="*{color}"
+                                            placeholder="#000000"
+                                            oninput="syncTextToColor('colorText1','colorPicker1')" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">WARNA
+                                        SEKUNDER</label>
+                                    <div class="color-row">
+                                        <input type="color"
+                                            th:field="*{secondaryColor}"
+                                            id="colorPicker2"
+                                            class="color-picker"
+                                            oninput="syncColorToText('colorPicker2','colorText2')" />
+                                        <input type="text" id="colorText2"
+                                            class="form-input"
+                                            th:value="*{secondaryColor}"
+                                            placeholder="#333333"
+                                            oninput="syncTextToColor('colorText2','colorPicker2')" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Favorit -->
+                        <div class="form-section">
+                            <div class="toggle-row">
+                                <label class="form-label">TANDAI SEBAGAI
+                                    FAVORIT</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox"
+                                        th:field="*{favorite}" />
+                                    <span class="toggle-track"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">TAGS (pilih lebih
+                                dari 1)</h3>
+                            <div class="tag-selector"
+                                th:if="${!#lists.isEmpty(allTags)}">
+                                <label th:each="tag : ${allTags}"
+                                    class="tag-option">
+                                    <input type="checkbox" th:field="*{tagIds}"
+                                        th:value="${tag.id}" />
+                                    <span th:text="'#' + ${tag.name}">tag</span>
+                                </label>
+                            </div>
+                            <p th:if="${#lists.isEmpty(allTags)}"
+                                class="empty-text">
+                                Belum ada tag. Tambah tag dari halaman wardrobe
+                                setelah menyimpan item.
+                            </p>
+                        </div>
+
+                        <div class="form-actions">
+                            <a th:href="@{/wardrobe}"
+                                class="btn btn-outline">BATAL</a>
+                            <button type="submit" class="btn btn-primary">
+                                <span
+                                    th:text="${isEdit} ? 'SIMPAN PERUBAHAN' : 'ADD TO WARDROBE'">SAVE</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>
