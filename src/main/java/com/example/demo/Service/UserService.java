@@ -61,4 +61,8 @@ public class UserService implements UserDetailsService {
                 .roles("USER")
                 .build();
     }
+
+    public void save(User user) {
+        userRepository.save(user);
+    }
 }

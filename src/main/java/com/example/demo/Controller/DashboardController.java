@@ -30,26 +30,30 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model, Principal principal) {
-        User user = userService.getByUsername(principal.getName());
+        public String dashboard(Model model, Principal principal) {
+            User user = userService.getByUsername(principal.getName());
 
-        List<ClothingItem> recentItems = wardrobeService.findRecentByUser(user);
+            List<ClothingItem> recentItems = wardrobeService.findRecentByUser(user);
 
-        Map<String, Long> categoryStats = new LinkedHashMap<>();
-        for (ClothingItem item : wardrobeService.findAllByUser(user)) {
-            String category = item.getCategory() != null ? item.getCategory() : "ITEM";
-            categoryStats.put(category, categoryStats.getOrDefault(category, 0L) + 1);
+            Map<String, Long> categoryStats = new LinkedHashMap<>();
+            for (ClothingItem item : wardrobeService.findAllByUser(user)) {
+                String category = item.getCategory() != null ? item.getCategory() : "ITEM";
+                categoryStats.put(category, categoryStats.getOrDefault(category, 0L) + 1);
+            }
+
+            model.addAttribute("username", user.getUsername());
+            model.addAttribute("itemCount", wardrobeService.countByUser(user));
+            model.addAttribute("favoriteCount", wardrobeService.countFavoriteByUser(user));
+            model.addAttribute("agendaCount", scheduleService.countByUser(user));
+            model.addAttribute("upcomingCount", scheduleService.countUpcomingByUser(user));
+            model.addAttribute("recentItems", recentItems);
+            model.addAttribute("upcomingAgendas", scheduleService.findUpcomingByUser(user));
+            model.addAttribute("categoryStats", categoryStats);
+
+            // --- TAMBAHKAN BARIS INI ---
+            model.addAttribute("hasSeenTutorial", user.isHasSeenTutorial());
+
+            return "dashboard";
         }
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("itemCount", wardrobeService.countByUser(user));
-        model.addAttribute("favoriteCount", wardrobeService.countFavoriteByUser(user));
-        model.addAttribute("agendaCount", scheduleService.countByUser(user));
-        model.addAttribute("upcomingCount", scheduleService.countUpcomingByUser(user));
-        model.addAttribute("recentItems", recentItems);
-        model.addAttribute("upcomingAgendas", scheduleService.findUpcomingByUser(user));
-        model.addAttribute("categoryStats", categoryStats);
-
-        return "dashboard";
     }
-}
+

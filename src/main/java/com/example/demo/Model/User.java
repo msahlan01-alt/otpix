@@ -31,6 +31,16 @@ public class User {
 
     private String password;
 
+    private boolean hasSeenTutorial = false;
+
+    public boolean isHasSeenTutorial() {
+        return hasSeenTutorial;
+    }
+
+    public void setHasSeenTutorial(boolean hasSeenTutorial) {
+        this.hasSeenTutorial = hasSeenTutorial;
+    }
+
     public User() {
     }
 

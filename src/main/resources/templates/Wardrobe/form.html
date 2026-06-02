@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http:
-    <head
-        th:replace="~{fragments/head :: head(${isEdit} ? 'Edit Item' : 'Tambah Item')}"></head>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments/head :: head(${isEdit} ? 'Edit Item' : 'Tambah Item')}"></head>
     <body>
         <div class="app-shell">
             <th:block th:replace="~{fragments/sidebar :: sidebar}"></th:block>

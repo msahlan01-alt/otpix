@@ -1,123 +1,175 @@
 <!DOCTYPE html>
 <html lang="id" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{fragments/head :: head('Dashboard')}"></head>
 
-    <body class="app-body">
-        <div class="app-shell">
-            <th:block
-                th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></th:block>
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
 
-            <main class="main-content app-main">
-                <header class="page-header">
-                    <div>
-                        <p class="page-eyebrow">WELCOME BACK</p>
-                        <h1 class="page-title"
-                            th:text="${username != null ? username : 'USER'}">
-                            USER
-                        </h1>
+<body class="app-body">
+    <div class="app-shell">
+        <th:block th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></th:block>
+
+        <main class="main-content app-main">
+            <header class="page-header">
+                <div>
+                    <p class="page-eyebrow">WELCOME BACK</p>
+                    <h1 class="page-title" th:text="${username != null ? username : 'USER'}">
+                        USER
+                    </h1>
+                </div>
+
+                <a id="step-3" th:href="@{/Wardrobe/form}" class="btn btn-accent">
+                    + ADD ITEM
+                </a>
+            </header>
+
+            <article id="step-1" class="stat-card">
+                <span class="stat-label">TOTAL ITEM</span>
+                <span class="stat-value" th:text="${itemCount != null ? itemCount : 0}">0</span>
+                <span class="stat-sub">di wardrobe</span>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-label">FAVORIT</span>
+                <span class="stat-value" th:text="${favoriteCount != null ? favoriteCount : 0}">0</span>
+                <span class="stat-sub">item ditandai</span>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-label">TOTAL EVENT</span>
+                <span class="stat-value" th:text="${agendaCount != null ? agendaCount : 0}">0</span>
+                <span class="stat-sub">di schedule</span>
+            </article>
+
+            <article class="stat-card stat-card-accent">
+                <span class="stat-label">MENDATANG</span>
+                <span class="stat-value" th:text="${upcomingCount != null ? upcomingCount : 0}">0</span>
+                <span class="stat-sub">event akan datang</span>
+            </article>
+            </section>
+
+            <div class="dashboard-grid">
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">ITEM TERBARU</h2>
+                        <a th:href="@{/wardrobe}" class="btn btn-sm btn-outline">LIHAT SEMUA →</a>
                     </div>
 
-                    <a th:href="@{/Wardrobe/form}" class="btn btn-accent">
-                        + ADD ITEM
-                    </a>
-                </header>
+                    <div th:if="${recentItems == null or #lists.isEmpty(recentItems)}" class="empty-inline">
+                        Belum ada item.
+                        <a th:href="@{/Wardrobe/form}">Tambah sekarang →</a>
+                    </div>
 
-                <section class="stats-grid">
-                    <article class="stat-card">
-                        <span class="stat-label">TOTAL ITEM</span>
-                        <span class="stat-value"
-                            th:text="${itemCount != null ? itemCount : 0}">0</span>
-                        <span class="stat-sub">di wardrobe</span>
-                    </article>
+                    <div class="mini-grid" th:if="${recentItems != null and !#lists.isEmpty(recentItems)}">
+                        <article class="mini-card" th:each="item : ${recentItems}">
+                            <a th:href="@{/wardrobe/{id}(id=${item.id})}" class="mini-card-link">
+                                <div class="mini-card-img">
+                                    <span class="mini-emoji">👔</span>
+                                    <span th:if="${item.favorite}" class="mini-fav">♥</span>
+                                </div>
 
-                    <article class="stat-card">
-                        <span class="stat-label">FAVORIT</span>
-                        <span class="stat-value"
-                            th:text="${favoriteCount != null ? favoriteCount : 0}">0</span>
-                        <span class="stat-sub">item ditandai</span>
-                    </article>
-
-                    <article class="stat-card">
-                        <span class="stat-label">TOTAL EVENT</span>
-                        <span class="stat-value"
-                            th:text="${agendaCount != null ? agendaCount : 0}">0</span>
-                        <span class="stat-sub">di schedule</span>
-                    </article>
-
-                    <article class="stat-card stat-card-accent">
-                        <span class="stat-label">MENDATANG</span>
-                        <span class="stat-value"
-                            th:text="${upcomingCount != null ? upcomingCount : 0}">0</span>
-                        <span class="stat-sub">event akan datang</span>
-                    </article>
+                                <p class="mini-name" th:text="${item.name}">Item Name</p>
+                                <p class="mini-meta" th:text="${item.category != null ? item.category : 'ITEM'}">ITEM
+                                </p>
+                            </a>
+                        </article>
+                    </div>
                 </section>
 
-                <div class="dashboard-grid">
-                    <section class="dashboard-section">
-                        <div class="section-header">
-                            <h2 class="section-title">ITEM TERBARU</h2>
-                            <a th:href="@{/wardrobe}"
-                                class="btn btn-sm btn-outline">LIHAT SEMUA →</a>
-                        </div>
+                <section id="step-2" class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">JADWAL MENDATANG</h2>
+                        <a th:href="@{/schedule}" class="btn btn-sm btn-outline">LIHAT SEMUA →</a>
+                    </div>
 
-                        <div
-                            th:if="${recentItems == null or #lists.isEmpty(recentItems)}"
-                            class="empty-inline">
-                            Belum ada item.
-                            <a th:href="@{/Wardrobe/form}">Tambah sekarang →</a>
-                        </div>
+                    <div th:if="${upcomingAgendas == null or #lists.isEmpty(upcomingAgendas)}" class="empty-inline">
+                        Belum ada jadwal.
+                        <a th:href="@{/Schedule/form}">Tambah event →</a>
+                    </div>
+                </section>
 
-                        <div class="mini-grid"
-                            th:if="${recentItems != null and !#lists.isEmpty(recentItems)}">
-                            <article class="mini-card"
-                                th:each="item : ${recentItems}">
-                                <a th:href="@{/wardrobe/{id}(id=${item.id})}"
-                                    class="mini-card-link">
-                                    <div class="mini-card-img">
-                                        <span class="mini-emoji">👔</span>
-                                        <span th:if="${item.favorite}"
-                                            class="mini-fav">♥</span>
-                                    </div>
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">STATISTIK KATEGORI</h2>
+                    </div>
 
-                                    <p class="mini-name"
-                                        th:text="${item.name}">Item Name</p>
-                                    <p class="mini-meta"
-                                        th:text="${item.category != null ? item.category : 'ITEM'}">ITEM</p>
-                                </a>
-                            </article>
-                        </div>
-                    </section>
+                    <div th:if="${categoryStats == null or categoryStats.isEmpty()}" class="empty-inline">
+                        Belum ada statistik kategori.
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
 
-                    <section class="dashboard-section">
-                        <div class="section-header">
-                            <h2 class="section-title">JADWAL MENDATANG</h2>
-                            <a th:href="@{/schedule}"
-                                class="btn btn-sm btn-outline">LIHAT SEMUA →</a>
-                        </div>
+    <script th:src="@{/js/main.js}"></script>
 
-                        <div
-                            th:if="${upcomingAgendas == null or #lists.isEmpty(upcomingAgendas)}"
-                            class="empty-inline">
-                            Belum ada jadwal.
-                            <a th:href="@{/Schedule/form}">Tambah event →</a>
-                        </div>
-                    </section>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
 
-                    <section class="dashboard-section">
-                        <div class="section-header">
-                            <h2 class="section-title">STATISTIK KATEGORI</h2>
-                        </div>
+    <script th:if="${!hasSeenTutorial}">
+        const driver = window.driver.js.driver;
 
-                        <div
-                            th:if="${categoryStats == null or categoryStats.isEmpty()}"
-                            class="empty-inline">
-                            Belum ada statistik kategori.
-                        </div>
-                    </section>
-                </div>
-            </main>
-        </div>
+        const configDriver = driver({
+            showProgress: true,
+            nextBtnText: 'Lanjut ➔',
+            prevBtnText: '⬅ Kembali',
+            doneBtnText: 'Selesai!',
+            steps: [{
+                    element: '#step-1',
+                    popover: {
+                        title: 'Total Pakaian',
+                        description: 'Di sini kamu bisa melihat jumlah seluruh koleksi pakaian yang ada di lemari digitalmu.',
+                        position: 'bottom'
+                    }
+                },
+                {
+                    element: '#step-2',
+                    popover: {
+                        title: 'Jadwal Agenda',
+                        description: 'Pantau agenda atau rencana mix-and-match pakaian kamu di kolom ini.',
+                        position: 'top'
+                    }
+                },
+                {
+                    element: '#step-3',
+                    popover: {
+                        title: 'Tambah Pakaian Baru',
+                        description: 'Klik tombol ini untuk memasukkan koleksi outfit barumu ke dalam aplikasi Otpix.',
+                        position: 'left'
+                    }
+                },
+                {
+                    element: '#step-4',
+                    popover: {
+                        title: 'Tambah Pakaian Baru',
+                        description: 'Klik tombol ini untuk memasukkan koleksi outfit barumu ke dalam aplikasi Otpix.',
+                        position: 'left'
+                    }
+                },
+                {
+                    element: '#step-5',
+                    popover: {
+                        title: 'Tambah Pakaian Baru',
+                        description: 'Klik tombol ini untuk memasukkan koleksi outfit barumu ke dalam aplikasi Otpix.',
+                        position: 'left'
+                    }
+                },
+            ],
+            // Kirim sinyal ke Spring Boot saat tutorial ditutup/selesai
+            onDestroyed: function () {
+                fetch('/api/user/complete-tutorial', {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log("Status tutorial berhasil diperbarui di database.");
+                        }
+                    })
+                    .catch(err => console.error("Gagal update status tutorial:", err));
+            }
+        });
 
-        <script th:src="@{/js/main.js}"></script>
-    </body>
+        // Mulai tour tutorial
+        configDriver.drive();
+    </script>
+</body>
+
 </html>
