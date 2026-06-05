@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Schedule — OUTFIX</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+        <style>
+        /* ======================================================
+           SCHEDULE PAGE — Google Calendar Style
+        ====================================================== */
+
+        .schedule-wrap {
+            display: flex;
+            height: calc(100vh - 73px); /* 73px = tinggi page-header */
+            overflow: hidden;
+        }
+
+        /* ── LEFT: Calendar ── */
+        .cal-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 2px solid var(--foreground);
+        }
+
+        /* Month/Year navigation bar */
+        .cal-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--background);
+            flex-shrink: 0;
+        }
+        .cal-month-label {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            color: var(--foreground);
+            letter-spacing: 0.05em;
+            line-height: 1;
+        }
+        .cal-year-label {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+            letter-spacing: 0.15em;
+            margin-top: 2px;
+        }
+        .cal-nav-btns {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .cal-nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 2px solid var(--foreground);
+            background: transparent;
+            color: var(--foreground);
+            font-family: var(--font-display);
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .cal-nav-btn:hover { background: var(--accent); }
+        .cal-today-btn {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            padding: 0.35rem 0.9rem;
+            border: 2px solid var(--foreground);
+            background: transparent;
+            color: var(--foreground);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .cal-today-btn:hover { background: var(--foreground); color: var(--background); }
+
+        /* Day headers: Mon–Sun */
+        .cal-day-headers {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .cal-day-header {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            color: var(--muted-foreground);
+            letter-spacing: 0.2em;
+            text-align: center;
+            padding: 0.5rem 0;
+        }
+        .cal-day-header.weekend { color: var(--muted-foreground); opacity: 0.6; }
+
+        /* Calendar grid */
+        .cal-grid-wrap {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-auto-rows: minmax(100px, 1fr);
+            border-left: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+            min-height: 100%;
+        }
+        .cal-cell {
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 0.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            background: var(--background);
+            transition: background 0.12s;
+            cursor: pointer;
+            position: relative;
+        }
+        .cal-cell:hover { background: rgba(211,247,94,0.06); }
+        .cal-cell.other-month {
+            background: var(--muted);
+            opacity: 0.45;
+        }
+        .cal-cell.today {
+            background: rgba(211,247,94,0.12);
+        }
+        .cal-cell.today .cell-num {
+            background: var(--foreground);
+            color: var(--background);
+        }
+        .cal-cell.has-event { /* subtle indicator */ }
+
+        /* Day number */
+        .cell-num {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0;
+            flex-shrink: 0;
+            transition: background 0.12s;
+        }
+        .cal-cell:hover .cell-num { background: var(--accent); color: var(--foreground); }
+        .cal-cell.today .cell-num { background: var(--foreground); color: var(--background); }
+
+        /* Event chips inside cell */
+        .cell-events { display: flex; flex-direction: column; gap: 2px; }
+        .cell-chip {
+            font-family: var(--font-display);
+            font-size: 0.58rem;
+            letter-spacing: 0.03em;
+            padding: 2px 5px;
+            border-left: 2px solid var(--foreground);
+            background: var(--accent);
+            color: var(--foreground);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            cursor: pointer;
+            transition: opacity 0.12s;
+        }
+        .cell-chip:hover { opacity: 0.75; }
+        .cell-chip.type-formal   { background: var(--foreground); color: var(--background); border-left-color: var(--accent); }
+        .cell-chip.type-casual   { background: var(--accent); color: var(--foreground); }
+        .cell-chip.type-campus   { background: #c7d2fe; color: #1e1b4b; border-left-color: #4f46e5; }
+        .cell-chip.type-work     { background: #fcd34d; color: #78350f; border-left-color: #d97706; }
+        .cell-chip.type-date     { background: #fca5a5; color: #7f1d1d; border-left-color: #ef4444; }
+        .cell-more {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            color: var(--muted-foreground);
+            padding-left: 2px;
+        }
+
+        /* ── RIGHT: Upcoming panel ── */
+        .upcoming-panel {
+            width: 300px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .upcoming-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .upcoming-title {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            color: var(--muted-foreground);
+            letter-spacing: 0.25em;
+        }
+        .upcoming-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Upcoming event card */
+        .upcoming-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.12s;
+            text-decoration: none;
+            color: var(--foreground);
+        }
+        .upcoming-card:hover { background: var(--muted); }
+        .upcoming-date {
+            flex-shrink: 0;
+            width: 42px;
+            text-align: center;
+            padding: 0.4rem 0.25rem;
+            border: 1.5px solid var(--foreground);
+        }
+        .upcoming-date-day {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            line-height: 1;
+            color: var(--foreground);
+        }
+        .upcoming-date-mon {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            color: var(--muted-foreground);
+            letter-spacing: 0.1em;
+            margin-top: 2px;
+        }
+        .upcoming-date-yr {
+            font-family: var(--font-display);
+            font-size: 0.5rem;
+            color: var(--muted-foreground);
+            opacity: 0.7;
+        }
+        .upcoming-info { flex: 1; min-width: 0; }
+        .upcoming-event-title {
+            font-family: var(--font-display);
+            font-size: 0.875rem;
+            color: var(--foreground);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .upcoming-meta {
+            font-family: var(--font-display);
+            font-size: 0.62rem;
+            color: var(--muted-foreground);
+            margin-top: 3px;
+        }
+        .upcoming-type-badge {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            padding: 1px 6px;
+            letter-spacing: 0.08em;
+            margin-top: 4px;
+            display: inline-block;
+        }
+        .upcoming-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .del-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border: 1.5px solid var(--destructive);
+            background: transparent;
+            color: var(--destructive);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-family: var(--font-display);
+            transition: all 0.12s;
+        }
+        .del-btn:hover { background: var(--destructive); color: #fff; }
+
+        /* Empty state */
+        .upcoming-empty {
+            padding: 2rem 1.25rem;
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Flash messages */
+        .flash-wrap { padding: 0 1.5rem; }
+
+        @media (max-width: 768px) {
+            .schedule-wrap { flex-direction: column; height: auto; }
+            .cal-main { border-right: none; border-bottom: 2px solid var(--foreground); }
+            .upcoming-panel { width: 100%; }
+            .cal-grid { grid-auto-rows: minmax(70px, 1fr); }
+        }
+    </style>
+    </head>
+    <body>
+        <div class="app-shell">
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div class="sidebar-logo">
+                    <a href="/dashboard" class="logo-link">FASHIONCE</a>
+                    <p class="logo-sub">SMART WARDROBE</p>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="/dashboard"
+                        class="nav-item"><span>📊</span><span>DASHBOARD</span></a>
+                    <a href="/wardrobe"
+                        class="nav-item"><span>👗</span><span>WARDROBE</span></a>
+                    <a href="/schedule"
+                        class="nav-item active"><span>📅</span><span>SCHEDULE</span></a>
+                    <a href="/generate"
+                        class="nav-item"><span>⚡</span><span>GENERATE</span></a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <div class="user-avatar"><span
+                                style="color:var(--accent);">👤</span></div>
+                        <div class="user-meta">
+                            <p class="user-name" th:text="${username}">USER</p>
+                        </div>
+                    </div>
+                    <form th:action="@{/auth/logout}" method="post"
+                        style="display:contents;">
+                        <button type="submit"
+                            class="logout-btn"><span>🚪</span><span>LOG
+                                OUT</span></button>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- MAIN -->
+            <main class="main-content">
+
+                <!-- Page Header -->
+                <div class="page-header"
+                    style="border-bottom:2px solid var(--foreground);">
+                    <div>
+                        <p class="page-eyebrow" style="letter-spacing:3.6px;">MY
+                            AGENDA</p>
+                        <h1 class="page-title"
+                            style="font-size:clamp(2rem,4vw,2.75rem);">SCHEDULE</h1>
+                    </div>
+                    <a href="/schedule/add" class="btn btn-accent">+ ADD
+                        EVENT</a>
+                </div>
+
+                <!-- Flash messages -->
+                <div th:if="${success}" class="flash flash-success"
+                    style="margin:0.75rem 1.5rem;">
+                    <span th:text="${success}"></span>
+                    <button class="flash-close"
+                        onclick="this.parentElement.remove()">×</button>
+                </div>
+                <div th:if="${error}" class="flash flash-error"
+                    style="margin:0.75rem 1.5rem;">
+                    <span th:text="${error}"></span>
+                    <button class="flash-close"
+                        onclick="this.parentElement.remove()">×</button>
+                </div>
+
+                <div class="schedule-wrap">
+
+                    <!-- ══ LEFT: CALENDAR ══ -->
+                    <div class="cal-main">
+
+                        <!-- Toolbar: Month Year + Nav -->
+                        <div class="cal-toolbar">
+                            <div>
+                                <div class="cal-month-label"
+                                    th:text="${monthName}">JUNE</div>
+                                <div class="cal-year-label"
+                                    th:text="${currentYear}">2026</div>
+                            </div>
+                            <div class="cal-nav-btns">
+                                <a
+                                    th:href="@{/schedule(month=${prevMonth},year=${prevYear})}"
+                                    class="cal-nav-btn"
+                                    title="Previous month">←</a>
+                                <a th:href="@{/schedule}"
+                                    class="cal-today-btn">TODAY</a>
+                                <a
+                                    th:href="@{/schedule(month=${nextMonth},year=${nextYear})}"
+                                    class="cal-nav-btn" title="Next month">→</a>
+                            </div>
+                        </div>
+
+                        <!-- Day headers -->
+                        <div class="cal-day-headers">
+                            <div class="cal-day-header">MON</div>
+                            <div class="cal-day-header">TUE</div>
+                            <div class="cal-day-header">WED</div>
+                            <div class="cal-day-header">THU</div>
+                            <div class="cal-day-header">FRI</div>
+                            <div class="cal-day-header weekend">SAT</div>
+                            <div class="cal-day-header weekend">SUN</div>
+                        </div>
+
+                        <!-- Grid -->
+                        <div class="cal-grid-wrap">
+                            <div class="cal-grid">
+
+                                <!-- Empty cells before day 1 (Mon-based) -->
+                                <th:block
+                                    th:with="offset=${firstDayOfWeek - 1}">
+                                    <div th:if="${offset > 0}"
+                                        th:each="i : ${#numbers.sequence(1, offset)}"
+                                        class="cal-cell other-month">
+                                    </div>
+                                </th:block>
+
+                                <!-- Actual days -->
+                                <th:block
+                                    th:each="day : ${#numbers.sequence(1, daysInMonth)}">
+                                    <div class="cal-cell"
+                                        th:classappend="
+                                    (${today.dayOfMonth == day and today.monthValue == currentMonth and today.year == currentYear} ? ' today' : '') +
+                                    (${eventsByDay.containsKey(day)} ? ' has-event' : '')"
+                                        th:attr="data-day=${day}">
+
+                                        <span class="cell-num"
+                                            th:text="${day}">1</span>
+
+                                        <!-- Event chips (max 3 visible) -->
+                                        <div class="cell-events"
+                                            th:if="${eventsByDay.containsKey(day)}">
+                                            <th:block
+                                                th:each="ev, evStat : ${eventsByDay[day]}">
+                                                <a th:if="${evStat.index < 3}"
+                                                    th:href="@{/schedule/{id}(id=${ev.id})}"
+                                                    class="cell-chip"
+                                                    th:classappend="${ev.eventType != null} ? ' type-' + ${#strings.toLowerCase(ev.eventType)} : ''"
+                                                    th:text="${ev.startTime != null} ? ${#temporals.format(ev.startTime,'HH:mm')} + ' ' + ${ev.title} : ${ev.title}"
+                                                    th:title="${ev.title}">
+                                                </a>
+                                            </th:block>
+                                            <span class="cell-more"
+                                                th:if="${#lists.size(eventsByDay[day]) > 3}"
+                                                th:text="'+ ' + (${#lists.size(eventsByDay[day])} - 3) + ' more'">
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                </th:block>
+
+                                <!-- Fill remaining cells to complete last row -->
+                                <th:block th:with="
+                            totalCells=${firstDayOfWeek - 1 + daysInMonth},
+                            remainder=${totalCells % 7 == 0 ? 0 : 7 - (totalCells % 7)}">
+                                    <div th:if="${remainder > 0}"
+                                        th:each="i : ${#numbers.sequence(1, remainder)}"
+                                        class="cal-cell other-month">
+                                    </div>
+                                </th:block>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══ RIGHT: UPCOMING EVENTS ══ -->
+                    <div class="upcoming-panel">
+                        <div class="upcoming-header">
+                            <span class="upcoming-title">UPCOMING EVENTS</span>
+                            <a href="/schedule/add"
+                                class="btn btn-sm btn-accent">+ ADD</a>
+                        </div>
+
+                        <div class="upcoming-list">
+
+                            <div th:if="${not #lists.isEmpty(agendas)}">
+                                <div class="upcoming-card"
+                                    th:each="agenda : ${agendas}">
+
+                                    <!-- Date badge: day / month / year -->
+                                    <div class="upcoming-date">
+                                        <div class="upcoming-date-day"
+                                            th:text="${#temporals.format(agenda.eventDate, 'dd')}">01</div>
+                                        <div class="upcoming-date-mon"
+                                            th:text="${#temporals.format(agenda.eventDate, 'MMM').toUpperCase()}">JAN</div>
+                                        <div class="upcoming-date-yr"
+                                            th:text="${#temporals.format(agenda.eventDate, 'yyyy')}">2026</div>
+                                    </div>
+
+                                    <!-- Info -->
+                                    <div class="upcoming-info">
+                                        <div class="upcoming-event-title"
+                                            th:text="${agenda.title}">Event
+                                            Title</div>
+                                        <div class="upcoming-meta"
+                                            th:if="${agenda.startTime != null}"
+                                            th:text="${#temporals.format(agenda.startTime,'HH:mm')}
+                                              + (${agenda.endTime != null} ? ' – ' + ${#temporals.format(agenda.endTime,'HH:mm')} : '')">
+                                        </div>
+                                        <div class="upcoming-meta"
+                                            th:if="${agenda.location != null and not #strings.isEmpty(agenda.location)}"
+                                            th:text="'📍 ' + ${agenda.location}">
+                                        </div>
+                                        <span
+                                            class="upcoming-type-badge cell-chip"
+                                            th:if="${agenda.eventType != null}"
+                                            th:classappend="' type-' + ${#strings.toLowerCase(agenda.eventType)}"
+                                            th:text="${agenda.eventType}">CASUAL</span>
+                                    </div>
+
+                                    <!-- Delete -->
+                                    <div class="upcoming-actions">
+                                        <form
+                                            th:action="@{/schedule/{id}/delete(id=${agenda.id})}"
+                                            method="post">
+                                            <button type="submit"
+                                                class="del-btn"
+                                                onclick="return confirm('Hapus event ini?')"
+                                                title="Hapus event">×</button>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div th:if="${#lists.isEmpty(agendas)}"
+                                class="upcoming-empty">
+                                <p>No upcoming events.</p>
+                                <a href="/schedule/add"
+                                    class="btn btn-sm btn-accent"
+                                    style="margin-top:0.75rem;">Add your first
+                                    event</a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+
+        <script>
+    // Klik cell → redirect ke add event dengan tanggal pre-filled
+    document.querySelectorAll('.cal-cell:not(.other-month)').forEach(cell => {
+        cell.addEventListener('click', function(e) {
+            // Jangan trigger jika yang diklik adalah chip event (biar navigasi ke detail)
+            if (e.target.classList.contains('cell-chip') || e.target.closest('.cell-chip')) return;
+            const day = this.dataset.day;
+            if (!day) return;
+            const month = String(['[${currentMonth}]']).padStart(2, '0');
+            const year  = '[[${currentYear}]]';
+            const dateStr = `${year}-${month}-${String(day).padStart(2,'0')}`;
+            window.location.href = `/schedule/add?date=${dateStr}`;
+        });
+    });
+</script>
+    </body>
+</html>

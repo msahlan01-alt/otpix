@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard — OUTFIX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- ========== APP SHELL ========== -->
+    <div class="app-shell">
+
+        <!-- ========== SIDEBAR ========== -->
+        <aside class="sidebar">
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <a href="/dashboard" class="logo-link">FASHIONCE</a>
+                <p class="logo-sub">SMART WARDROBE</p>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <!-- Dashboard (active) -->
+                <a href="/dashboard" class="nav-item active">
+                    <span>📊</span>
+                    <span>DASHBOARD</span>
+                </a>
+                <!-- Wardrobe -->
+                <a href="/wardrobe" class="nav-item">
+                    <span>👗</span>
+                    <span>WARDROBE</span>
+                </a>
+                <!-- Schedule -->
+                <a href="/schedule" class="nav-item">
+                    <span>📅</span>
+                    <span>SCHEDULE</span>
+                </a>
+                <!-- Generate -->
+                <a href="/generate" class="nav-item">
+                    <span>⚡</span>
+                    <span>GENERATE</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer (User Info + Logout) -->
+            <div class="sidebar-footer">
+                <!-- User Info -->
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <span style="color: var(--accent);">👤</span>
+                    </div>
+                    <div class="user-meta">
+                        <p class="user-name" th:text="${username} ?: 'USER'">USER</p>
+                        <p class="user-role" th:text="${userEmail} ?: 'user@email.com'">user@email.com</p>
+                    </div>
+                </div>
+                <!-- Logout Button -->
+                <form th:action="@{/auth/logout}" method="post" style="display: contents;">
+                    <button type="submit" class="logout-btn">
+                        <span>🚪</span>
+                        <span>LOG OUT</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- ========== MAIN CONTENT ========== -->
+        <main class="main-content">
+
+            <!-- Header -->
+            <div class="page-header" style="background: var(--accent); border-bottom: 1px solid var(--foreground);">
+                <div>
+                    <p class="page-eyebrow" style="color: rgba(0,0,0,0.6);">WELCOME BACK,</p>
+                    <h1 class="page-title" style="font-size: clamp(2rem, 4vw, 3.5rem);">
+                        WHAT ARE YOU WEARING TODAY?
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <!-- Wardrobe Items -->
+                <div class="stat-card stat-card-accent">
+                    <p class="stat-label">WARDROBE ITEMS</p>
+                    <p class="stat-value" th:text="${itemCount} ?: '0'">0</p>
+                </div>
+                <!-- This Week's Events -->
+                <div class="stat-card">
+                    <p class="stat-label">THIS WEEK'S EVENTS</p>
+                    <p class="stat-value" th:text="${agendaCount} ?: '0'">0</p>
+                </div>
+                <!-- Outfits Generated -->
+                <div class="stat-card">
+                    <p class="stat-label">OUTFITS GENERATED</p>
+                    <p class="stat-value" th:text="${generatedCount} ?: '0'">0</p>
+                </div>
+                <!-- Styles Tracked -->
+                <div class="stat-card">
+                    <p class="stat-label">STYLES TRACKED</p>
+                    <p class="stat-value" th:text="${styleCount} ?: '4'">4</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Quick Access Section -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h3 class="section-title">QUICK ACCESS</h3>
+                    </div>
+                    <div class="agenda-list-mini">
+                        <!-- Wardrobe Quick Access -->
+                        <a href="/wardrobe" class="agenda-mini-card" style="padding: var(--sp-4);">
+                            <div style="width: 40px; height: 40px; background: var(--accent); border: 1px solid var(--foreground); display: flex; align-items: center; justify-content: center;">
+                                <span>👗</span>
+                            </div>
+                            <div style="flex: 1;">
+                                <p style="font-family: var(--font-display); font-size: 1rem; color: var(--foreground);">WARDROBE</p>
+                                <p style="font-family: var(--font-display); font-size: 0.75rem; color: var(--muted-foreground);">Manage your clothes</p>
+                            </div>
+                            <span style="color: var(--muted-foreground);">→</span>
+                        </a>
+                        <!-- Schedule Quick Access -->
+                        <a href="/schedule" class="agenda-mini-card" style="padding: var(--sp-4);">
+                            <div style="width: 40px; height: 40px; background: var(--foreground); border: 1px solid var(--foreground); display: flex; align-items: center; justify-content: center;">
+                                <span style="color: var(--background);">📅</span>
+                            </div>
+                            <div style="flex: 1;">
+                                <p style="font-family: var(--font-display); font-size: 1rem; color: var(--foreground);">SCHEDULE</p>
+                                <p style="font-family: var(--font-display); font-size: 0.75rem; color: var(--muted-foreground);">Plan your week</p>
+                            </div>
+                            <span style="color: var(--muted-foreground);">→</span>
+                        </a>
+                        <!-- Generate Quick Access -->
+                        <a href="/generate" class="agenda-mini-card" style="padding: var(--sp-4);">
+                            <div style="width: 40px; height: 40px; background: var(--accent); border: 1px solid var(--foreground); display: flex; align-items: center; justify-content: center;">
+                                <span>⚡</span>
+                            </div>
+                            <div style="flex: 1;">
+                                <p style="font-family: var(--font-display); font-size: 1rem; color: var(--foreground);">GENERATE</p>
+                                <p style="font-family: var(--font-display); font-size: 0.75rem; color: var(--muted-foreground);">Get outfit ideas</p>
+                            </div>
+                            <span style="color: var(--muted-foreground);">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Outfits Section -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h3 class="section-title">RECENT OUTFITS</h3>
+                        <a href="/generate" class="btn btn-sm btn-accent">GENERATE NEW →</a>
+                    </div>
+                    <div class="mini-grid">
+                        <!-- Recent Outfit 1 -->
+                        <a href="#" class="mini-card-link">
+                            <div class="mini-card-img">
+                                <img src="https://placehold.co/274x198" alt="Monday Office" class="item-img">
+                                <div class="mini-emoji" style="background: rgba(0,0,0,0.4);">
+                                    <span style="color: #fff; font-family: var(--font-display);">Monday Office</span>
+                                </div>
+                            </div>
+                            <p class="mini-name">Monday Office</p>
+                            <p class="mini-meta" style="color: var(--accent);">Indie</p>
+                        </a>
+                        <!-- Recent Outfit 2 -->
+                        <a href="#" class="mini-card-link">
+                            <div class="mini-card-img">
+                                <img src="https://placehold.co/274x198" alt="Weekend Out" class="item-img">
+                                <div class="mini-emoji" style="background: rgba(0,0,0,0.4);">
+                                    <span style="color: #fff; font-family: var(--font-display);">Weekend Out</span>
+                                </div>
+                            </div>
+                            <p class="mini-name">Weekend Out</p>
+                            <p class="mini-meta" style="color: var(--accent);">Street Wear</p>
+                        </a>
+                        <!-- Recent Outfit 3 -->
+                        <a href="#" class="mini-card-link">
+                            <div class="mini-card-img">
+                                <img src="https://placehold.co/274x198" alt="Night Event" class="item-img">
+                                <div class="mini-emoji" style="background: rgba(0,0,0,0.4);">
+                                    <span style="color: #fff; font-family: var(--font-display);">Night Event</span>
+                                </div>
+                            </div>
+                            <p class="mini-name">Night Event</p>
+                            <p class="mini-meta" style="color: var(--accent);">Dark Wear</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tip Bar -->
+            <div style="padding: var(--sp-5) var(--sp-8); display: flex; align-items: center; gap: var(--sp-3); border-top: 1px solid var(--border);">
+                <span style="opacity: 0.4;">📈</span>
+                <p style="font-family: var(--font-display); color: var(--muted-foreground);">
+                    TIP: HEAD TO <a href="/schedule" style="text-decoration: underline; color: var(--foreground);">SCHEDULE</a> TO ADD YOUR WEEK'S EVENTS AND GET OUTFIT SUGGESTIONS FOR EACH ONE.
+                </p>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>

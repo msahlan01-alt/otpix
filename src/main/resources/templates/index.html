@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>OUTFIX — Smart Wardrobe</title>
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap"
+            rel="stylesheet">
+        <!-- Main CSS -->
+        <link rel="stylesheet" href="/css/landing.css">
+    </head>
+    <body>
+
+        <!-- HEADER TICKER -->
+        <div class="header-ticker">
+            <div class="ticker-track">
+                <span>SMART WARDROBE</span><span class="ticker-dot">•</span>
+                <span>SMARTER OUTFITS</span><span class="ticker-dot">•</span>
+                <span>BETTER DAILY DECISIONS</span><span
+                    class="ticker-dot">•</span>
+                <span>SMART WARDROBE</span><span class="ticker-dot">•</span>
+                <span>SMARTER OUTFITS</span><span class="ticker-dot">•</span>
+                <span>BETTER DAILY DECISIONS</span><span
+                    class="ticker-dot">•</span>
+                <!-- duplicate for seamless loop -->
+                <span>SMART WARDROBE</span><span class="ticker-dot">•</span>
+                <span>SMARTER OUTFITS</span><span class="ticker-dot">•</span>
+                <span>BETTER DAILY DECISIONS</span><span
+                    class="ticker-dot">•</span>
+                <span>SMART WARDROBE</span><span class="ticker-dot">•</span>
+                <span>SMARTER OUTFITS</span><span class="ticker-dot">•</span>
+                <span>BETTER DAILY DECISIONS</span><span
+                    class="ticker-dot">•</span>
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <nav class="nav">
+            <div class="nav-logo-wrap">
+                <div class="nav-hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+                <a href="#" class="nav-logo">OUTFIX</a>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">HOME</a>
+                <a href="#" class="nav-link active">ABOUT</a>
+                <a href="#style" class="nav-link">STYLE</a>
+                <a href="#features" class="nav-link active">FEATURE</a>
+                <a href="#" class="nav-link">CONTACT</a>
+            </div>
+            <div class="nav-actions">
+                <button onclick="openModal('modal-login')" class="nav-login">LOG
+                    IN</button>
+                <button onclick="openModal('modal-register')"
+                    class="nav-signup">SIGN UP</button>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-grid-bg"></div>
+            <div class="hero-left">
+                <p class="hero-eyebrow">SMART WARDROBE APP — 2026</p>
+                <h1 class="hero-title">
+                    MORE<br>
+                    <span class="accent-word">STYLES,</span><br>
+                    EXPRESSION.
+                </h1>
+                <p class="hero-desc">
+                    Manage your clothing collections easily, discover outfits
+                    that match your schedule and activities.
+                </p>
+                <div class="hero-cta">
+                    <button onclick="openModal('modal-register')"
+                        class="btn btn-primary btn-lg">GET STARTED</button>
+                    <a href="#features" class="btn btn-outline btn-lg">SEE HOW
+                        IT WORKS</a>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-badge-box">
+                    <div class="hero-badge-icon">👕</div>
+                    <div class="hero-badge-text">SMART<br>WARDROBE</div>
+                </div>
+                <div class="hero-sub-badge">AI OUTFIT GENERATOR</div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">4</div>
+                        <div class="hero-stat-label">STYLE TYPES</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">3</div>
+                        <div class="hero-stat-label">KEY FEATURES</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">∞</div>
+                        <div class="hero-stat-label">COMBINATIONS</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DARK TICKER -->
+        <div class="dark-ticker">
+            <div class="ticker-track">
+                <span>STYLE</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>MOOD</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>OUTFIT</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>DAILY</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>STYLE</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>MOOD</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>OUTFIT</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>DAILY</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <!-- duplicate -->
+                <span>STYLE</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>MOOD</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>OUTFIT</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+                <span>DAILY</span><span class="ticker-dot"
+                    style="color:var(--accent)">✦</span>
+            </div>
+        </div>
+
+        <!-- MY LIFE, MY RULE -->
+        <section class="rule-section fade-up">
+            <h2 class="rule-heading">
+                MY <span class="green">LIFE,</span> MY<span class="green">
+                    RULE</span>
+            </h2>
+            <p class="rule-desc">
+                Keep track of every piece you own, manage upcoming events<br>
+                and discover outfit combinations designed around your<br>
+                wardrobe and daily agenda.
+            </p>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="features-section" id="features">
+            <!-- Feature 1: WARDROBE -->
+            <div class="feature-block fade-up">
+                <div class="feature-visual">
+                    <div class="feature-mock">
+                        <div class="feature-mock-header">
+                            <span>WARDROBE</span>
+                            <div class="mock-dot"></div>
+                        </div>
+                        <div class="mock-grid">
+                            <div class="mock-item">👔</div>
+                            <div class="mock-item accent-item">👕</div>
+                            <div class="mock-item">🧥</div>
+                            <div class="mock-item">👗</div>
+                            <div class="mock-item">👖</div>
+                            <div class="mock-item">👟</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-text">
+                    <div class="feature-num">01</div>
+                    <div class="feature-label">WARDROBE MANAGEMENT</div>
+                    <h3 class="feature-title">WARDROBE</h3>
+                    <p class="feature-desc">
+                        Upload your garments and accessories onto a sleek,
+                        gridded interface reminiscent of classic operating
+                        systems. Each piece is logged by type and tone. Organise
+                        them into custom folders with a simple drag-and-drop.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 2: SCHEDULE (reversed) -->
+            <div class="feature-block reversed fade-up">
+                <div class="feature-visual">
+                    <div class="feature-mock">
+                        <div class="feature-mock-header">
+                            <span>SCHEDULE</span>
+                            <div class="mock-dot"></div>
+                        </div>
+                        <div class="mock-cal">
+                            <div class="mock-cal-head">M</div><div
+                                class="mock-cal-head">T</div>
+                            <div class="mock-cal-head">W</div><div
+                                class="mock-cal-head">T</div>
+                            <div class="mock-cal-head">F</div><div
+                                class="mock-cal-head">S</div>
+                            <div class="mock-cal-head">S</div>
+                            <div class="mock-cal-day"></div><div
+                                class="mock-cal-day"></div>
+                            <div class="mock-cal-day has-event">3</div><div
+                                class="mock-cal-day">4</div>
+                            <div class="mock-cal-day today">5</div><div
+                                class="mock-cal-day">6</div>
+                            <div class="mock-cal-day">7</div>
+                            <div class="mock-cal-day has-event">8</div><div
+                                class="mock-cal-day">9</div>
+                            <div class="mock-cal-day">10</div><div
+                                class="mock-cal-day has-event">11</div>
+                            <div class="mock-cal-day">12</div><div
+                                class="mock-cal-day">13</div>
+                            <div class="mock-cal-day">14</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-text">
+                    <div class="feature-num">02</div>
+                    <div class="feature-label">DAILY PLANNING</div>
+                    <h3 class="feature-title">SCHEDULE</h3>
+                    <p class="feature-desc">
+                        Input your daily timeline into a pixel perfect calendar.
+                        The system cross references your events with real-time
+                        weather and extracts only the contextually appropriate
+                        options from your wardrobe.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 3: GENERATE -->
+            <div class="feature-block fade-up">
+                <div class="feature-visual">
+                    <div class="feature-mock">
+                        <div class="feature-mock-header">
+                            <span>GENERATE</span>
+                            <div class="mock-dot"></div>
+                        </div>
+                        <div class="mock-terminal">
+                            <div class="cmd">$ outfix generate --today</div>
+                            <div class="res">→ Analyzing wardrobe data...</div>
+                            <div class="res">→ Checking schedule: <span
+                                    class="highlight">CASUAL</span></div>
+                            <div class="res">→ Outfit ready ✓</div>
+                        </div>
+                        <div class="mock-outfit-row">
+                            <div class="mock-outfit-piece">👕</div>
+                            <div class="mock-outfit-piece">👖</div>
+                            <div class="mock-outfit-piece">👟</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-text">
+                    <div class="feature-num">03</div>
+                    <div class="feature-label">AI OUTFIT GENERATOR</div>
+                    <h3 class="feature-title">GENERATE</h3>
+                    <p class="feature-desc">
+                        The algorithmic stylist boots up with a brief loading
+                        sequence reminiscent of a retro terminal. A single
+                        command blends your wardrobe data and schedule to
+                        deliver curated outfits instantly.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STYLE TYPES -->
+        <section class="styles-section" id="style">
+            <div class="styles-header">
+                <h2 class="styles-title">YOUR<br>STYLE<br>TYPE.</h2>
+                <p class="styles-sub">DISCOVER WHICH AESTHETIC RESONATES WITH
+                    YOUR IDENTITY.</p>
+            </div>
+            <div class="styles-grid">
+                <div class="style-card style-darkwear fade-up">
+                    <div class="style-card-img">
+                        🖤
+                        <div class="style-card-label">Dark Wear</div>
+                    </div>
+                    <div class="style-card-info">
+                        A dark and expressive style defined by layered outfits,
+                        silver accessories, and an effortlessly edgy attitude.
+                    </div>
+                </div>
+                <div class="style-card style-alternative fade-up">
+                    <div class="style-card-img">
+                        ⛓️
+                        <div class="style-card-label">Alternative</div>
+                    </div>
+                    <div class="style-card-info">
+                        A dark and nostalgic Y2K aesthetic defined by oversized
+                        silhouettes, heavy silver chains, and a rebellious
+                        attitude.
+                    </div>
+                </div>
+                <div class="style-card style-indie fade-up">
+                    <div class="style-card-img">
+                        🎸
+                        <div class="style-card-label">Indie</div>
+                    </div>
+                    <div class="style-card-info">
+                        A nostalgic and expressive style defined by vintage
+                        fits, retro accessories, and an effortlessly artistic
+                        attitude.
+                    </div>
+                </div>
+                <div class="style-card style-streetwear fade-up">
+                    <div class="style-card-img">
+                        👟
+                        <div class="style-card-label">Street Wear</div>
+                    </div>
+                    <div class="style-card-info">
+                        A bold urban aesthetic driven by oversized silhouettes,
+                        statement sneakers, and an unapologetic attitude.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MANTRA -->
+        <section class="mantra-section">
+            <div class="mantra-bg-text">OUTFIX</div>
+            <p class="mantra-eyebrow">— FASHIONCE MANTRA —</p>
+            <h2 class="mantra-text">YOU CAN'T OVERTHINK FOREVER.</h2>
+            <h2 class="mantra-text"><span class="lime">BETTER PICK AN
+                    OUTFIT.</span></h2>
+        </section>
+
+        <!-- CTA / SIGN UP -->
+        <section class="cta-section">
+            <div>
+                <h2 class="cta-heading">START YOUR<br><span
+                        style="-webkit-text-stroke:1.5px var(--foreground); color:var(--accent)">SMART</span><br>WARDROBE.</h2>
+                <p class="cta-sub">Join thousands of people who've simplified
+                    their daily outfit decisions with Outfix.</p>
+            </div>
+            <div class="cta-form">
+                <div class="cta-input-row">
+                    <input class="cta-input" type="email"
+                        placeholder="YOUR EMAIL ADDRESS">
+                    <button class="cta-btn">SIGN UP</button>
+                </div>
+                <p class="cta-hint">FREE TO START. NO CREDIT CARD REQUIRED.</p>
+                <a href="#" onclick="openModal('modal-register'); return false;"
+                    class="btn btn-accent btn-lg"
+                    style="margin-top:var(--sp-2)">CREATE YOUR ACCOUNT →</a>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-cols">
+                <div class="footer-col">
+                    <div class="footer-col-title">PRODUCT</div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">How it works</a>
+                        <a href="#" class="footer-link">Features</a>
+                        <a href="#" class="footer-link">Style Types</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">GROUPS</div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">About</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">SUPPORT</div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Terms</a>
+                        <a href="#" class="footer-link">Privacy</a>
+                        <a href="#" class="footer-link">Contact</a>
+                        <a href="#" class="footer-link">Help Center</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">CONNECT</div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Pinterest</a>
+                        <a href="#" class="footer-link">Twitter / X</a>
+                        <a href="#" class="footer-link">TikTok</a>
+                        <a href="#" class="footer-link">Instagram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span class="footer-copy">© 2026 OUTFIX. ALL RIGHTS
+                    RESERVED.</span>
+                <span class="footer-tagline">SMART WARDROBE</span>
+            </div>
+        </footer>
+
+        <!-- ═══════════════════════════════════════════════
+         MODAL: LOGIN
+    ═══════════════════════════════════════════════ -->
+        <div class="modal-backdrop" id="modal-login" aria-modal="true"
+            role="dialog" aria-labelledby="modal-login-title">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <div>
+                        <p class="modal-eyebrow">WELCOME BACK</p>
+                        <h2 class="modal-title" id="modal-login-title">LOG
+                            IN</h2>
+                    </div>
+                    <button class="modal-close"
+                        onclick="closeModal('modal-login')"
+                        aria-label="Close">✕</button>
+                </div>
+                <div class="modal-body">
+                    <form class="auth-form" method="post" action="/auth/login">
+                        <div class="form-group">
+                            <label for="login-username">USERNAME</label>
+                            <input id="login-username" name="username"
+                                type="text" placeholder="your_username" required
+                                autocomplete="username" />
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">PASSWORD</label>
+                            <input id="login-password" name="password"
+                                type="password" placeholder="••••••••" required
+                                autocomplete="current-password" />
+                        </div>
+                        <button type="submit"
+                            class="btn btn-accent btn-full">LOG IN →</button>
+                    </form>
+                    <p class="modal-switch">
+                        Don't have an account?
+                        <button class="modal-switch-btn"
+                            onclick="switchModal('modal-login','modal-register')">SIGN
+                            UP</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+         MODAL: REGISTER
+    ═══════════════════════════════════════════════ -->
+        <div class="modal-backdrop" id="modal-register" aria-modal="true"
+            role="dialog" aria-labelledby="modal-register-title">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <div>
+                        <p class="modal-eyebrow">JOIN OUTFIX</p>
+                        <h2 class="modal-title" id="modal-register-title">SIGN
+                            UP</h2>
+                    </div>
+                    <button class="modal-close"
+                        onclick="closeModal('modal-register')"
+                        aria-label="Close">✕</button>
+                </div>
+                <div class="modal-body">
+                    <form class="auth-form" method="post"
+                        action="/auth/register">
+                        <div class="form-group">
+                            <label for="reg-username">USERNAME</label>
+                            <input id="reg-username" name="username" type="text"
+                                placeholder="your_username" required
+                                autocomplete="username" />
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">EMAIL</label>
+                            <input id="reg-email" name="email" type="email"
+                                placeholder="you@email.com" required
+                                autocomplete="email" />
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-password">PASSWORD</label>
+                            <input id="reg-password" name="password"
+                                type="password" placeholder="••••••••" required
+                                autocomplete="new-password" />
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-confirm">CONFIRM PASSWORD</label>
+                            <input id="reg-confirm" name="confirmPassword"
+                                type="password" placeholder="••••••••" required
+                                autocomplete="new-password" />
+                        </div>
+                        <button type="submit"
+                            class="btn btn-accent btn-full">CREATE ACCOUNT
+                            →</button>
+                    </form>
+                    <p class="modal-switch">
+                        Already have an account?
+                        <button class="modal-switch-btn"
+                            onclick="switchModal('modal-register','modal-login')">LOG
+                            IN</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+         MODAL STYLES (inline so no separate file needed)
+    ═══════════════════════════════════════════════ -->
+        <style>
+    /* ── Backdrop ── */
+    .modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.72);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+    .modal-backdrop.open {
+        display: flex;
+        animation: modal-fade-in 0.2s ease;
+    }
+    @keyframes modal-fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    /* ── Box ── */
+    .modal-box {
+        background: var(--background, #fff);
+        border: 2px solid var(--foreground, #030213);
+        width: 100%;
+        max-width: 440px;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modal-slide-up 0.22s ease;
+        position: relative;
+    }
+    @keyframes modal-slide-up {
+        from { opacity: 0; transform: translateY(18px) scale(0.98); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Header ── */
+    .modal-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 1.5rem 1.5rem 0;
+        border-bottom: 2px solid var(--foreground, #030213);
+        padding-bottom: 1rem;
+        margin-bottom: 0;
+    }
+    .modal-eyebrow {
+        font-family: var(--font-display, 'Jersey 25', monospace);
+        font-size: 0.65rem;
+        letter-spacing: 0.25em;
+        color: var(--muted-foreground, #717182);
+        margin-bottom: 0.25rem;
+    }
+    .modal-title {
+        font-family: var(--font-display, 'Jersey 25', monospace);
+        font-size: 2rem;
+        letter-spacing: 0.04em;
+        color: var(--foreground, #030213);
+        line-height: 1;
+    }
+    .modal-close {
+        background: none;
+        border: 2px solid var(--foreground, #030213);
+        color: var(--foreground, #030213);
+        font-family: var(--font-display, 'Jersey 25', monospace);
+        font-size: 1rem;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.12s, color 0.12s;
+        margin-top: 0.25rem;
+    }
+    .modal-close:hover {
+        background: var(--foreground, #030213);
+        color: var(--background, #fff);
+    }
+
+    /* ── Body ── */
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    /* ── Switch link ── */
+    .modal-switch {
+        font-family: var(--font-display, 'Jersey 25', monospace);
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        color: var(--muted-foreground, #717182);
+        text-align: center;
+        margin-top: 1rem;
+    }
+    .modal-switch-btn {
+        background: none;
+        border: none;
+        font-family: inherit;
+        font-size: inherit;
+        letter-spacing: inherit;
+        color: var(--foreground, #030213);
+        cursor: pointer;
+        text-decoration: underline;
+        padding: 0;
+    }
+    .modal-switch-btn:hover { opacity: 0.65; }
+
+    /* ── Auth form inside modal ── */
+    .modal-body .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .modal-body .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+    .modal-body .form-group label {
+        font-family: var(--font-display, 'Jersey 25', monospace);
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        color: var(--foreground, #030213);
+    }
+    .modal-body .form-group input,
+    .modal-body .form-group select {
+        background: var(--input-background, #f3f3f5);
+        border: 2px solid var(--foreground, #030213);
+        color: var(--foreground, #030213);
+        font-family: var(--font-display, 'Jersey 25', monospace);
+        font-size: 0.9rem;
+        padding: 0.6rem 0.75rem;
+        outline: none;
+        width: 100%;
+        transition: border-color 0.12s, box-shadow 0.12s;
+    }
+    .modal-body .form-group input:focus,
+    .modal-body .form-group select:focus {
+        border-color: var(--accent, #d3f75e);
+        box-shadow: 0 0 0 3px rgba(211,247,94,0.25);
+    }
+    .modal-body .form-group input::placeholder {
+        color: var(--muted-foreground, #717182);
+        opacity: 0.7;
+    }
+    .modal-body .btn-full {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    </style>
+
+        <!-- JavaScript -->
+        <script src="/js/main.js"></script>
+        <script>
+    /* ── Modal helpers ── */
+    function openModal(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        // Focus first input
+        setTimeout(() => {
+            const first = el.querySelector('input');
+            if (first) first.focus();
+        }, 60);
+    }
+
+    function closeModal(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function switchModal(fromId, toId) {
+        closeModal(fromId);
+        setTimeout(() => openModal(toId), 120);
+    }
+
+    /* Close on backdrop click */
+    document.querySelectorAll('.modal-backdrop').forEach(function(backdrop) {
+        backdrop.addEventListener('click', function(e) {
+            if (e.target === backdrop) closeModal(backdrop.id);
+        });
+    });
+
+    /* Close on Escape */
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-backdrop.open').forEach(function(m) {
+                closeModal(m.id);
+            });
+        }
+    });
+    </script>
+    </body>
+</html>

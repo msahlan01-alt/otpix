@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http:
+    <head
+        th:replace="~{fragments/head :: head(${isEdit} ? 'Edit Event' : 'Tambah Event')}"></head>
+    <body>
+        <div class="app-shell">
+            <th:block th:replace="~{fragments/sidebar :: sidebar}"></th:block>
+            <main class="main-content">
+
+                <div class="page-header">
+                    <div>
+                        <p class="page-eyebrow">SCHEDULE</p>
+                        <h1 class="page-title"
+                            th:text="${isEdit} ? 'EDIT EVENT' : 'ADD EVENT'">ADD
+                            EVENT</h1>
+                    </div>
+                    <a th:href="@{/schedule}" class="btn btn-outline">←
+                        KEMBALI</a>
+                </div>
+
+                <div class="form-page-wrap">
+                    <form
+                        th:action="${isEdit} ? @{/schedule/{id}/edit(id=${agenda.id})} : @{/schedule/add}"
+                        method="post" th:object="${form}" novalidate
+                        id="scheduleForm">
+
+                        <!-- Event Name -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">INFORMASI EVENT</h3>
+                            <div class="form-group">
+                                <label class="form-label" for="evtTitle">NAMA
+                                    EVENT *</label>
+                                <input type="text" id="evtTitle"
+                                    th:field="*{title}" class="form-input"
+                                    placeholder="e.g. Birthday Party"
+                                    required />
+                                <span th:if="${#fields.hasErrors('title')}"
+                                    class="form-error"
+                                    th:errors="*{title}">Error</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group form-col-2">
+                                    <label class="form-label"
+                                        for="evtDate">TANGGAL *</label>
+                                    <input type="date" id="evtDate"
+                                        th:field="*{eventDate}"
+                                        class="form-input" required />
+                                    <span
+                                        th:if="${#fields.hasErrors('eventDate')}"
+                                        class="form-error"
+                                        th:errors="*{eventDate}">Error</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="startTime">MULAI</label>
+                                    <input type="time" id="startTime"
+                                        th:field="*{startTime}"
+                                        class="form-input" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="endTime">SELESAI</label>
+                                    <input type="time" id="endTime"
+                                        th:field="*{endTime}"
+                                        class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Type -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">TIPE EVENT</h3>
+                            <div class="event-type-picker" id="eventTypePicker">
+                                <label th:each="type : ${eventTypes}"
+                                    class="evt-type-option">
+                                    <input type="radio" th:field="*{eventType}"
+                                        th:value="${type}" />
+                                    <span class="evt-type-label"
+                                        th:classappend="'evt-' + ${#strings.toLowerCase(type)}"
+                                        th:text="${type}">TYPE</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Dress Code -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">DRESS CODE &
+                                LOKASI</h3>
+                            <div class="form-grid">
+                                <div class="form-group form-col-2">
+                                    <label class="form-label"
+                                        for="dressCode">DRESS CODE</label>
+                                    <select id="dressCode"
+                                        th:field="*{dressCode}"
+                                        class="form-select">
+                                        <option th:each="dc : ${dressCodes}"
+                                            th:value="${dc}"
+                                            th:text="${dc}">Casual</option>
+                                    </select>
+                                </div>
+                                <div class="form-group form-col-2">
+                                    <label class="form-label">TIPE
+                                        LOKASI</label>
+                                    <div class="location-toggle">
+                                        <label th:each="lt : ${locationTypes}"
+                                            class="loc-option">
+                                            <input type="radio"
+                                                th:field="*{locationType}"
+                                                th:value="${lt}" />
+                                            <span
+                                                th:text="${lt == 'Outdoor'} ? '🌤️ OUTDOOR' : '🏠 INDOOR'">Type</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a th:href="@{/schedule}"
+                                class="btn btn-outline">BATAL</a>
+                            <button type="submit" class="btn btn-primary">
+                                <span
+                                    th:text="${isEdit} ? 'SIMPAN PERUBAHAN' : 'SAVE EVENT'">SAVE</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

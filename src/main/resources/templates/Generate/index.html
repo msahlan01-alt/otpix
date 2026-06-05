@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http:
+    <head th:replace="~{fragments/head :: head('Generate Outfit')}"></head>
+    <body>
+        <div class="app-shell">
+            <th:block th:replace="~{fragments/sidebar :: sidebar}"></th:block>
+            <main class="main-content">
+
+                <div th:if="${success}" class="flash flash-success">
+                    <span th:text="${success}"></span>
+                    <button class="flash-close"
+                        onclick="this.parentElement.remove()">×</button>
+                </div>
+                <div th:if="${error}" class="flash flash-error">
+                    <span th:text="${error}"></span>
+                    <button class="flash-close"
+                        onclick="this.parentElement.remove()">×</button>
+                </div>
+
+                <div class="page-header">
+                    <div>
+                        <p class="page-eyebrow">AI OUTFIT PLANNER</p>
+                        <h1 class="page-title">GENERATE</h1>
+                    </div>
+                </div>
+
+                <div class="generate-intro">
+                    <div class="generate-intro-badge">✨ AI POWERED</div>
+                    <h2 class="generate-intro-title">SMART OUTFIT GENERATOR</h2>
+                    <p class="generate-intro-desc">
+                        Pilih salah satu event dari jadwalmu. AI akan
+                        menganalisis dress code, tipe lokasi,
+                        dan koleksi wardrobemu untuk memilihkan kombinasi outfit
+                        terbaik.
+                    </p>
+                </div>
+
+                <div th:if="${#lists.isEmpty(upcomingAgendas)}"
+                    class="empty-state">
+                    <p class="empty-title">TIDAK ADA EVENT</p>
+                    <p class="empty-desc">Tambahkan event ke schedule terlebih
+                        dahulu untuk bisa generate outfit.</p>
+                    <a th:href="@{/schedule/add}" class="btn btn-accent">+
+                        TAMBAH EVENT</a>
+                </div>
+
+                <div class="generate-list"
+                    th:unless="${#lists.isEmpty(upcomingAgendas)}">
+                    <div class="generate-event-card"
+                        th:each="agenda : ${upcomingAgendas}">
+                        <div class="gen-card-left">
+                            <div class="agenda-date-badge"
+                                th:classappend="'evt-' + ${#strings.toLowerCase(agenda.eventType)}">
+                                <span
+                                    th:text="${#temporals.format(agenda.eventDate,'dd')}">01</span>
+                                <span
+                                    th:text="${#temporals.format(agenda.eventDate,'MMM').toUpperCase()}">JAN</span>
+                            </div>
+                            <div class="gen-card-info">
+                                <p class="agenda-title"
+                                    th:text="${agenda.title}">Title</p>
+                                <div class="agenda-meta-row">
+                                    <span th:if="${agenda.startTime != null}"
+                                        class="agenda-meta">
+                                        🕐 <th:block
+                                            th:text="${#temporals.format(agenda.startTime,'HH:mm')}"></th:block>
+                                        — <th:block
+                                            th:text="${#temporals.format(agenda.endTime,'HH:mm')}"></th:block>
+                                    </span>
+                                    <span class="evt-badge"
+                                        th:classappend="'evt-' + ${#strings.toLowerCase(agenda.eventType)}"
+                                        th:text="${agenda.eventType}">TYPE</span>
+                                    <span class="agenda-meta">👔 <span
+                                            th:text="${agenda.dressCode}">DC</span></span>
+                                    <span class="agenda-meta"
+                                        th:text="${agenda.locationType == 'Outdoor'} ? '🌤️ Outdoor' : '🏠 Indoor'">Loc</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gen-card-right">
+                            <a th:href="@{/schedule/{id}(id=${agenda.id})}"
+                                class="btn btn-sm btn-outline">LIHAT</a>
+                            <form th:action="@{/generate/{id}(id=${agenda.id})}"
+                                method="post">
+                                <button type="submit" class="btn btn-accent">✨
+                                    GENERATE</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+        <script th:src="@{/js/main.js}"></script>
+    </body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Add Event — OUTFIX</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+        <style>
+        /* Penyesuaian kecil agar form lebih rapat dan konsisten */
+        .form-section {
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            border: 2px solid var(--foreground);
+        }
+        .form-section-title {
+            font-family: var(--font-display, 'Jersey 25', cursive);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            color: var(--muted-foreground, #717182);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--foreground, #030213);
+        }
+        .form-input, .form-select {
+            font-family: var(--font-display, 'Jersey 25', cursive);
+            font-size: 0.9rem;
+            padding: 0.6rem;
+            border: 2px solid var(--foreground, #030213);
+            width: 100%;
+            background: var(--background, #fff);
+            color: var(--foreground, #030213);
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: var(--accent, #d3f75e);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(211,247,94,0.25);
+        }
+        .btn {
+            font-family: var(--font-display, 'Jersey 25', cursive);
+            font-size: 0.875rem;
+            padding: 0.5rem 1.25rem;
+            border: 2px solid var(--foreground, #030213);
+            background: transparent;
+            color: var(--foreground, #030213);
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-accent {
+            background: var(--accent, #d3f75e);
+            color: var(--foreground, #030213);
+        }
+        .btn-outline {
+            background: transparent;
+        }
+        .btn:hover {
+            opacity: 0.8;
+        }
+        .btn-accent:hover {
+            background: var(--accent, #d3f75e);
+            opacity: 0.85;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="app-shell">
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div class="sidebar-logo">
+                    <a href="/dashboard" class="logo-link">FASHIONCE</a>
+                    <p class="logo-sub">SMART WARDROBE</p>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="/dashboard"
+                        class="nav-item"><span>📊</span><span>DASHBOARD</span></a>
+                    <a href="/wardrobe"
+                        class="nav-item"><span>👗</span><span>WARDROBE</span></a>
+                    <a href="/schedule"
+                        class="nav-item active"><span>📅</span><span>SCHEDULE</span></a>
+                    <a href="/generate"
+                        class="nav-item"><span>⚡</span><span>GENERATE</span></a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <div class="user-avatar"><span
+                                style="color:var(--accent);">👤</span></div>
+                        <div class="user-meta">
+                            <p class="user-name" th:text="${username}">USER</p>
+                        </div>
+                    </div>
+                    <form th:action="@{/auth/logout}" method="post"
+                        style="display:contents;">
+                        <button type="submit"
+                            class="logout-btn"><span>🚪</span><span>LOG
+                                OUT</span></button>
+                    </form>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="page-header"
+                    style="border-bottom:2px solid var(--foreground);">
+                    <div>
+                        <p class="page-eyebrow" style="letter-spacing:3.6px;">MY
+                            AGENDA</p>
+                        <h1 class="page-title"
+                            style="font-size:clamp(2rem,4vw,2.75rem);">ADD
+                            EVENT</h1>
+                    </div>
+                    <a href="/schedule" class="btn btn-outline">← BACK TO
+                        CALENDAR</a>
+                </div>
+
+                <div class="form-page-wrap">
+
+                    <!-- Flash error / success -->
+                    <div th:if="${error}" class="flash flash-error"
+                        style="margin-bottom:1rem;">
+                        <span th:text="${error}">Error</span>
+                        <button class="flash-close"
+                            onclick="this.parentElement.remove()">×</button>
+                    </div>
+
+                    <form method="post" th:action="@{/schedule/add}">
+                        <!-- CSRF Token (otomatis diabaikan jika tidak ada) -->
+                        <input type="hidden" th:name="${_csrf?.parameterName}"
+                            th:value="${_csrf?.token}" />
+
+                        <!-- ========== EVENT DETAILS ========== -->
+                        <div class="form-section">
+                            <p class="form-section-title">EVENT DETAILS</p>
+
+                            <div class="form-group" style="margin-bottom:1rem;">
+                                <label class="form-label" for="title">EVENT
+                                    TITLE</label>
+                                <input class="form-input" id="title"
+                                    name="title"
+                                    type="text"
+                                    placeholder="Campus Day, Meeting, Date Night..."
+                                    required />
+                            </div>
+
+                            <div class="form-grid"
+                                style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="eventDate">DATE</label>
+                                    <!-- Pre-fill dari klik sel kalender (?date=YYYY-MM-DD) -->
+                                    <input class="form-input" id="eventDate"
+                                        name="eventDate"
+                                        type="date"
+                                        th:value="${param.date != null ? param.date[0] : ''}"
+                                        required />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="eventType">EVENT TYPE</label>
+                                    <select class="form-input" id="eventType"
+                                        name="eventType">
+                                        <option value="CASUAL">Casual</option>
+                                        <option value="FORMAL">Formal</option>
+                                        <option value="CAMPUS">Campus</option>
+                                        <option value="WORK">Work</option>
+                                        <option value="DATE">Date</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-grid"
+                                style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="startTime">START TIME</label>
+                                    <input class="form-input" id="startTime"
+                                        name="startTime" type="time" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="endTime">END
+                                        TIME</label>
+                                    <input class="form-input" id="endTime"
+                                        name="endTime" type="time" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ========== ADDITIONAL INFO ========== -->
+                        <div class="form-section">
+                            <p class="form-section-title">ADDITIONAL INFO</p>
+                            <div class="form-grid"
+                                style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="location">LOCATION</label>
+                                    <input class="form-input" id="location"
+                                        name="location"
+                                        type="text"
+                                        placeholder="Cafe, campus, office..." />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        for="dressCode">DRESS CODE</label>
+                                    <input class="form-input" id="dressCode"
+                                        name="dressCode"
+                                        type="text"
+                                        placeholder="Smart Casual, Formal..." />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ========== ACTIONS ========== -->
+                        <div class="form-actions"
+                            style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1.5rem;">
+                            <a href="/schedule"
+                                class="btn btn-outline">CANCEL</a>
+                            <button type="submit" class="btn btn-accent">SAVE
+                                EVENT</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </body>
+</html>
