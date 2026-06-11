@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.Model.User;
 import com.example.demo.Repository.UserRepository;
@@ -37,7 +38,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("Email tidak ditemukan."));
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void markTutorialSeen(String username) {
         User user = getByUsername(username);
         user.setTutorialSeen(true);
@@ -60,10 +61,10 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(password));
         user.setRole("USER");
         user.setTutorialSeen(false);
-        user.setVerified(false); // belum verified sampai OTP dikonfirmasi
+        user.setVerified(false);
 
         userRepository.save(user);
-        otpService.generateAndSendOtp(user); // kirim OTP ke email
+        otpService.generateAndSendOtp(user);
         return user;
     }
 
@@ -77,7 +78,7 @@ public class UserService implements UserDetailsService {
         otpService.clearOtp(user);
     }
 
-    // Kirim OTP untuk login (2FA) — dipanggil setelah password benar
+    // Kirim OTP untuk login 2FA
     public void sendLoginOtp(String username) {
         User user = getByUsername(username);
         otpService.generateAndSendOtp(user);
@@ -92,12 +93,31 @@ public class UserService implements UserDetailsService {
         otpService.clearOtp(user);
     }
 
+    // Kirim OTP ke email untuk reset password
+    public void sendForgotPasswordOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email tidak ditemukan."));
+        otpService.generateAndSendOtp(user);
+    }
+
+    // Reset password setelah OTP diverifikasi
+    @Transactional
+    public void resetPassword(String email, String otp, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email tidak ditemukan."));
+        if (!otpService.validateOtp(user, otp)) {
+            throw new RuntimeException("OTP tidak valid atau sudah kadaluarsa.");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        otpService.clearOtp(user);
+        userRepository.save(user);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User tidak ditemukan."));
 
-        // Blokir login kalau belum verifikasi email
         if (!user.isVerified()) {
             throw new UsernameNotFoundException("Akun belum diverifikasi. Cek email kamu.");
         }

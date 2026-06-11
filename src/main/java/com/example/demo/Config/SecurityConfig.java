@@ -52,6 +52,8 @@ public class SecurityConfig {
                                                                 "/tutorial",
                                                                 "/tutorial/complete",
                                                                 "/tutorial/skip",
+                                                                "/auth/forgot-password",
+                                                                "/auth/reset-password",
                                                                 "/css/**",
                                                                 "/js/**",
                                                                 "/images/**",
