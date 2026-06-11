@@ -8,18 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.demo.Model.User;
-import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.UserService;
 
 @Controller
 public class TutorialController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
 
-    public TutorialController(UserService userService, UserRepository userRepository) {
+    public TutorialController(UserService userService) {
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping("/welcome")
@@ -44,18 +41,13 @@ public class TutorialController {
 
     @PostMapping("/tutorial/complete")
     public String completeTutorial(Principal principal) {
-        User user = userService.getByUsername(principal.getName());
-        user.setTutorialSeen(true);
-        userRepository.save(user);
+        userService.markTutorialSeen(principal.getName());
         return "redirect:/dashboard";
     }
 
-    // Untuk tombol "Lewati" — GET agar bisa dipakai dengan <a href>
-    @GetMapping("/skip-tutorial")
+    @GetMapping("/tutorial/skip")
     public String skipTutorial(Principal principal) {
-        User user = userService.getByUsername(principal.getName());
-        user.setTutorialSeen(true);
-        userRepository.save(user);
+        userService.markTutorialSeen(principal.getName());
         return "redirect:/dashboard";
     }
 }

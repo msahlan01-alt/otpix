@@ -1,7 +1,6 @@
 package com.example.demo.Dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -16,17 +15,10 @@ public class ClothingItemForm {
     @NotBlank(message = "Nama item wajib diisi")
     private String name;
 
-    @NotBlank(message = "Tipe item wajib dipilih")
-    private String categoryName;
+    @NotBlank(message = "Kategori wajib dipilih")
+    private String category; // Atasan, Bawahan, Luaran, Sepatu, Aksesori, Tas, Lainnya
 
-    private String color = "#000000";
-    private String secondaryColor = "#333333";
-    private String fit = "Regular";
-    private String condition = "Good";
-    private int timesWorn = 0;
+    private MultipartFile image; // foto pakaian
+
     private boolean favorite = false;
-
-    private int formalityLevel = 3;
-
-    private List<Long> tagIds = new ArrayList<>();
 }

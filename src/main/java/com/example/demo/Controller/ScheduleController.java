@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequestMapping("/schedule")
 public class ScheduleController {
 
     private final UserService userService;
@@ -24,26 +25,23 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-    @GetMapping("/schedule")
+    @GetMapping
     public String schedule(Model model, Principal principal) {
         User user = userService.getByUsername(principal.getName());
-
         model.addAttribute("username", user.getUsername());
-        model.addAttribute("agendas", scheduleService.findAllByUser(user));
-
-        return "schedule";
+        model.addAttribute("agendas", scheduleService.getSchedulesByUser(principal.getName()));
+        return "Schedule/schedule";
     }
 
-    @GetMapping("/schedule/add")
-    public String addSchedule(Model model, Principal principal) {
+    @GetMapping("/add")
+    public String addPage(Model model, Principal principal) {
         User user = userService.getByUsername(principal.getName());
         model.addAttribute("username", user.getUsername());
-
-        return "schedule-add";
+        return "Schedule/schedule-add";
     }
 
-    @PostMapping("/schedule/add")
-    public String storeSchedule(
+    @PostMapping("/add")
+    public String store(
             @RequestParam String title,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate eventDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
@@ -53,54 +51,48 @@ public class ScheduleController {
             @RequestParam(required = false) String location,
             Principal principal,
             RedirectAttributes redirectAttributes) {
-        User user = userService.getByUsername(principal.getName());
 
-        if (title == null || title.trim().isEmpty()) {
+        if (title == null || title.isBlank()) {
             redirectAttributes.addFlashAttribute("error", "Judul event wajib diisi.");
             return "redirect:/schedule/add";
         }
-
         if (eventDate == null) {
             redirectAttributes.addFlashAttribute("error", "Tanggal event wajib diisi.");
             return "redirect:/schedule/add";
         }
 
         scheduleService.create(
-                user,
+                principal.getName(),
                 title.trim(),
                 eventDate,
                 startTime,
                 endTime,
                 dressCode != null ? dressCode.trim() : "",
-                eventType != null && !eventType.trim().isEmpty() ? eventType.trim() : "CASUAL",
+                eventType != null && !eventType.isBlank() ? eventType.trim() : "Casual",
                 location != null ? location.trim() : "");
 
         redirectAttributes.addFlashAttribute("success", "Event berhasil ditambahkan.");
         return "redirect:/schedule";
     }
 
-    @GetMapping("/schedule/{id}")
+    @GetMapping("/{id}")
     public String detail(
             @PathVariable Long id,
             Model model,
             Principal principal) {
         User user = userService.getByUsername(principal.getName());
-        Schedule agenda = scheduleService.findOwnedAgenda(id, user);
-
+        Schedule agenda = scheduleService.getScheduleByIdAndUser(id, principal.getName());
         model.addAttribute("username", user.getUsername());
         model.addAttribute("agenda", agenda);
-
-        return "schedule-detail";
+        return "Schedule/schedule-detail";
     }
 
-    @PostMapping("/schedule/{id}/delete")
+    @PostMapping("/{id}/delete")
     public String delete(
             @PathVariable Long id,
             Principal principal,
             RedirectAttributes redirectAttributes) {
-        User user = userService.getByUsername(principal.getName());
-        scheduleService.delete(id, user);
-
+        scheduleService.delete(id, principal.getName());
         redirectAttributes.addFlashAttribute("success", "Event berhasil dihapus.");
         return "redirect:/schedule";
     }

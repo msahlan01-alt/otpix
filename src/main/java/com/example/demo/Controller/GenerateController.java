@@ -1,109 +1,91 @@
 package com.example.demo.Controller;
 
-import com.example.demo.Model.ClothingItem;
+import com.example.demo.Model.OutfitRecommendation;
+import com.example.demo.Model.Schedule;
 import com.example.demo.Model.User;
+import com.example.demo.Service.GenerateService;
+import com.example.demo.Service.ScheduleService;
 import com.example.demo.Service.UserService;
-import com.example.demo.Service.WardrobeService;
-import java.security.Principal;
-import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.security.Principal;
+import java.util.List;
 
 @Controller
+@RequestMapping("/generate")
 public class GenerateController {
 
+    private final GenerateService generateService;
+    private final ScheduleService scheduleService;
     private final UserService userService;
-    private final WardrobeService wardrobeService;
 
-    public GenerateController(UserService userService, WardrobeService wardrobeService) {
+    public GenerateController(GenerateService generateService,
+            ScheduleService scheduleService,
+            UserService userService) {
+        this.generateService = generateService;
+        this.scheduleService = scheduleService;
         this.userService = userService;
-        this.wardrobeService = wardrobeService;
     }
 
-    @GetMapping("/generate")
-    public String generate(Model model, Principal principal) {
+    // Halaman utama generate — tampilkan daftar agenda user
+    @GetMapping
+    public String generatePage(Model model, Principal principal) {
         User user = userService.getByUsername(principal.getName());
+        List<Schedule> schedules = scheduleService.getSchedulesByUser(principal.getName());
 
+        model.addAttribute("schedules", schedules);
         model.addAttribute("username", user.getUsername());
-
-        return "generate";
+        return "Generate/generate";
     }
 
-    @PostMapping("/generate")
-    public String generateOutfit(
-            @RequestParam String occasion,
-            @RequestParam String mood,
+    // Generate outfit untuk agenda tertentu
+    @PostMapping("/{scheduleId}")
+    public String generate(
+            @PathVariable Long scheduleId,
             Principal principal,
-            Model model) {
+            RedirectAttributes redirectAttributes) {
+
         User user = userService.getByUsername(principal.getName());
-        List<ClothingItem> items = wardrobeService.findAllByUser(user);
 
-        String recommendation;
-
-        if (items.isEmpty()) {
-            recommendation = "Wardrobe kamu masih kosong. Tambahkan item dulu agar rekomendasi outfit lebih akurat.";
-        } else {
-            recommendation = buildRecommendation(occasion, mood, items);
+        try {
+            Schedule schedule = scheduleService.getScheduleByIdAndUser(scheduleId, principal.getName());
+            generateService.generate(schedule, user);
+            redirectAttributes.addFlashAttribute("success", "Outfit berhasil digenerate!");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Gagal menghubungi Gemini. Coba lagi.");
         }
 
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("occasion", occasion);
-        model.addAttribute("mood", mood);
-        model.addAttribute("recommendation", recommendation);
-        model.addAttribute("items", items);
-
-        return "generate";
+        return "redirect:/generate/" + scheduleId + "/result";
     }
 
-    private String buildRecommendation(String occasion, String mood, List<ClothingItem> items) {
-        String top = findFirstByCategory(items, "TOPS");
-        String bottom = findFirstByCategory(items, "BOTTOMS");
-        String shoes = findFirstByCategory(items, "SHOES");
-        String outer = findFirstByCategory(items, "OUTERWEAR");
-        String accessory = findFirstByCategory(items, "ACCESSORIES");
+    // Halaman hasil rekomendasi
+    @GetMapping("/{scheduleId}/result")
+    public String result(
+            @PathVariable Long scheduleId,
+            Principal principal,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        StringBuilder builder = new StringBuilder();
+        User user = userService.getByUsername(principal.getName());
 
-        builder.append("Untuk ")
-                .append(occasion)
-                .append(" dengan mood ")
-                .append(mood)
-                .append(", coba kombinasi: ");
+        try {
+            Schedule schedule = scheduleService.getScheduleByIdAndUser(scheduleId, principal.getName());
+            OutfitRecommendation rec = generateService.getByAgendaId(scheduleId)
+                    .orElse(null);
 
-        if (top != null) {
-            builder.append(top);
-        } else {
-            builder.append("atasan favoritmu");
+            model.addAttribute("schedule", schedule);
+            model.addAttribute("recommendation", rec);
+            model.addAttribute("username", user.getUsername());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Agenda tidak ditemukan.");
+            return "redirect:/generate";
         }
 
-        if (bottom != null) {
-            builder.append(", ").append(bottom);
-        }
-
-        if (outer != null) {
-            builder.append(", layer ").append(outer);
-        }
-
-        if (shoes != null) {
-            builder.append(", dan ").append(shoes);
-        }
-
-        if (accessory != null) {
-            builder.append(". Lengkapi dengan ").append(accessory);
-        }
-
-        builder.append(". Pastikan warna dan kenyamanan sesuai aktivitasmu.");
-
-        return builder.toString();
-    }
-
-    private String findFirstByCategory(List<ClothingItem> items, String category) {
-        return items.stream()
-                .filter(item -> item.getCategory() != null)
-                .filter(item -> item.getCategory().equalsIgnoreCase(category))
-                .map(ClothingItem::getName)
-                .findFirst()
-                .orElse(null);
+        return "Generate/result";
     }
 }

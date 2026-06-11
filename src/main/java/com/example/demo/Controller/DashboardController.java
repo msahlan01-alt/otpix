@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.Model.ClothingItem;
+import com.example.demo.Model.Schedule;
 import com.example.demo.Model.User;
 import com.example.demo.Service.ScheduleService;
 import com.example.demo.Service.UserService;
@@ -34,26 +35,32 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
         User user = userService.getByUsername(principal.getName());
+        String username = principal.getName();
 
         if (!user.isTutorialSeen()) {
             return "redirect:/welcome";
         }
 
-        List<ClothingItem> recentItems = wardrobeService.findRecentByUser(user);
+        List<ClothingItem> allItems = wardrobeService.getItemsByUser(username);
+        List<ClothingItem> recentItems = wardrobeService.getRecentItems(username);
+        List<Schedule> upcomingAgendas = scheduleService.getUpcomingSchedules(username);
 
+        // Hitung stats per kategori
         Map<String, Long> categoryStats = new LinkedHashMap<>();
-        for (ClothingItem item : wardrobeService.findAllByUser(user)) {
-            String category = item.getCategory() != null ? item.getCategory() : "ITEM";
-            categoryStats.put(category, categoryStats.getOrDefault(category, 0L) + 1);
+        for (ClothingItem item : allItems) {
+            String category = item.getCategory() != null ? item.getCategory() : "Lainnya";
+            categoryStats.merge(category, 1L, (oldValue, newValue) -> oldValue + newValue);
         }
 
+        long favoriteCount = allItems.stream().filter(ClothingItem::isFavorite).count();
+
         model.addAttribute("username", user.getUsername());
-        model.addAttribute("itemCount", wardrobeService.countByUser(user));
-        model.addAttribute("favoriteCount", wardrobeService.countFavoriteByUser(user));
-        model.addAttribute("agendaCount", (long) scheduleService.findAllByUser(user).size());
-        model.addAttribute("upcomingCount", (long) scheduleService.findUpcomingByUser(user).size());
+        model.addAttribute("itemCount", (long) allItems.size());
+        model.addAttribute("favoriteCount", favoriteCount);
+        model.addAttribute("agendaCount", (long) scheduleService.getSchedulesByUser(username).size());
+        model.addAttribute("upcomingCount", (long) upcomingAgendas.size());
         model.addAttribute("recentItems", recentItems);
-        model.addAttribute("upcomingAgendas", scheduleService.findUpcomingByUser(user));
+        model.addAttribute("upcomingAgendas", upcomingAgendas);
         model.addAttribute("categoryStats", categoryStats);
 
         return "dashboard";

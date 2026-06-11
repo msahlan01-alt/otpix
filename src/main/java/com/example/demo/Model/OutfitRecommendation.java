@@ -48,4 +48,17 @@ private User user;
 
     @OneToMany(mappedBy = "recommendation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OutfitItem> outfitItems = new ArrayList<>();
+
+    public void addOutfitItem(ClothingItem item) {
+        OutfitItem outfitItem = new OutfitItem();
+        outfitItem.setClothingItem(item);
+        outfitItem.setRecommendation(this);
+        outfitItems.add(outfitItem);
+    }
+
+    public void save() {
+        for (OutfitItem outfitItem : outfitItems) {
+            outfitItem.setRecommendation(this);
+        }
+    }
 }

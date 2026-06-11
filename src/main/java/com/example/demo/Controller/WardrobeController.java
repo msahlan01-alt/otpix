@@ -1,13 +1,12 @@
 package com.example.demo.Controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.Model.ClothingItem;
@@ -16,6 +15,7 @@ import com.example.demo.Service.UserService;
 import com.example.demo.Service.WardrobeService;
 
 @Controller
+@RequestMapping("/wardrobe")
 public class WardrobeController {
 
     private final UserService userService;
@@ -26,92 +26,163 @@ public class WardrobeController {
         this.wardrobeService = wardrobeService;
     }
 
-    @GetMapping("/wardrobe")
-    public String wardrobe(Model model, Principal principal) {
+    // ===== LIST =====
+    @GetMapping
+    public String wardrobe(
+            @RequestParam(required = false) String category,
+            Model model,
+            Principal principal) {
         User user = userService.getByUsername(principal.getName());
 
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("items", wardrobeService.findAllByUser(user));
+        List<ClothingItem> items = (category != null && !category.isBlank())
+                ? wardrobeService.getItemsByCategory(principal.getName(), category)
+                : wardrobeService.getItemsByUser(principal.getName());
 
-        return "wardrobe";
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("items", items);
+        model.addAttribute("categories", wardrobeService.getValidCategories());
+        model.addAttribute("selectedCategory", category);
+        return "Wardrobe/wardrobe";
     }
 
-    @GetMapping("/wardrobe/add")
-    public String addWardrobeItem(Model model, Principal principal) {
+    // ===== ADD =====
+    @GetMapping("/add")
+    public String addPage(Model model, Principal principal) {
         User user = userService.getByUsername(principal.getName());
         model.addAttribute("username", user.getUsername());
-
-        return "wardrobe-add";
+        model.addAttribute("categories", wardrobeService.getValidCategories());
+        return "Wardrobe/wardrobe-add";
     }
 
-    @PostMapping("/wardrobe/add")
-    public String storeWardrobeItem(
+    @PostMapping("/add")
+    public String add(
             @RequestParam String name,
             @RequestParam String category,
-            @RequestParam(required = false) String color,
-            @RequestParam(required = false) String conditionStatus,
-            @RequestParam(required = false) String imageUrl,
+            @RequestParam(required = false) MultipartFile image,
+            @RequestParam(defaultValue = "false") boolean favorite,
             Principal principal,
             RedirectAttributes redirectAttributes) {
-        User user = userService.getByUsername(principal.getName());
 
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null || name.isBlank()) {
             redirectAttributes.addFlashAttribute("error", "Nama item wajib diisi.");
             return "redirect:/wardrobe/add";
         }
-
-        if (category == null || category.trim().isEmpty()) {
+        if (category == null || category.isBlank()) {
             redirectAttributes.addFlashAttribute("error", "Kategori wajib dipilih.");
             return "redirect:/wardrobe/add";
         }
+        if (image == null || image.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Foto pakaian wajib diupload.");
+            return "redirect:/wardrobe/add";
+        }
 
-        wardrobeService.create(
-                user,
-                name.trim(),
-                category.trim(),
-                color != null ? color.trim() : "",
-                conditionStatus != null ? conditionStatus.trim() : "",
-                imageUrl != null ? imageUrl.trim() : "");
+        try {
+            com.example.demo.Dto.ClothingItemForm form = new com.example.demo.Dto.ClothingItemForm();
+            form.setName(name.trim());
+            form.setCategory(category.trim());
+            form.setImage(image);
+            form.setFavorite(favorite);
 
-        redirectAttributes.addFlashAttribute("success", "Item berhasil ditambahkan.");
+            wardrobeService.addItem(form, principal.getName());
+            redirectAttributes.addFlashAttribute("success",
+                    "Item berhasil ditambahkan! Gemini sedang menganalisis pakaianmu.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/wardrobe/add";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error",
+                    "Gagal menganalisis gambar. Item disimpan dengan metadata default.");
+        }
+
         return "redirect:/wardrobe";
     }
 
-    @GetMapping("/wardrobe/{id}")
+    // ===== DETAIL =====
+    @GetMapping("/{id}")
     public String detail(
             @PathVariable Long id,
             Model model,
             Principal principal) {
         User user = userService.getByUsername(principal.getName());
-        ClothingItem item = wardrobeService.findOwnedItem(id, user);
+        ClothingItem item = wardrobeService.getItemByIdAndUser(id, principal.getName());
 
         model.addAttribute("username", user.getUsername());
         model.addAttribute("item", item);
-
-        return "wardrobe-detail";
+        return "Wardrobe/wardrobe-detail";
     }
 
-    @PostMapping("/wardrobe/{id}/favorite")
-    public String toggleFavorite(
+    // ===== EDIT =====
+    @GetMapping("/{id}/edit")
+    public String editPage(
             @PathVariable Long id,
+            Model model,
+            Principal principal) {
+        User user = userService.getByUsername(principal.getName());
+        ClothingItem item = wardrobeService.getItemByIdAndUser(id, principal.getName());
+
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("item", item);
+        model.addAttribute("categories", wardrobeService.getValidCategories());
+        return "Wardrobe/wardrobe-edit";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String edit(
+            @PathVariable Long id,
+            @RequestParam String name,
+            @RequestParam String category,
+            @RequestParam(required = false) MultipartFile image,
+            @RequestParam(defaultValue = "false") boolean favorite,
             Principal principal,
             RedirectAttributes redirectAttributes) {
-        User user = userService.getByUsername(principal.getName());
-        wardrobeService.toggleFavorite(id, user);
 
-        redirectAttributes.addFlashAttribute("success", "Status favorit diperbarui.");
-        return "redirect:/wardrobe";
+        try {
+            com.example.demo.Dto.ClothingItemForm form = new com.example.demo.Dto.ClothingItemForm();
+            form.setName(name.trim());
+            form.setCategory(category.trim());
+            form.setImage(image);
+            form.setFavorite(favorite);
+
+            wardrobeService.updateItem(id, form, principal.getName());
+            redirectAttributes.addFlashAttribute("success", "Item berhasil diupdate.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/wardrobe/" + id;
     }
 
-    @PostMapping("/wardrobe/{id}/delete")
+    // ===== TOGGLE FAVORITE =====
+    @PostMapping("/{id}/favorite")
+    @ResponseBody
+    public java.util.Map<String, Object> toggleFavorite(
+            @PathVariable Long id,
+            Principal principal) {
+        boolean isFavorite = wardrobeService.toggleFavorite(id, principal.getName());
+        return java.util.Map.of("favorite", isFavorite);
+    }
+
+    // ===== DELETE =====
+    @PostMapping("/{id}/delete")
     public String delete(
             @PathVariable Long id,
             Principal principal,
             RedirectAttributes redirectAttributes) {
-        User user = userService.getByUsername(principal.getName());
-        wardrobeService.delete(id, user);
-
-        redirectAttributes.addFlashAttribute("success", "Item berhasil dihapus.");
+        try {
+            wardrobeService.deleteItem(id, principal.getName());
+            redirectAttributes.addFlashAttribute("success", "Item berhasil dihapus.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/wardrobe";
+    }
+
+    // ===== FAVORITES PAGE =====
+    @GetMapping("/favorites")
+    public String favorites(Model model, Principal principal) {
+        User user = userService.getByUsername(principal.getName());
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("favorites", wardrobeService.getFavoriteItems(principal.getName()));
+        return "Wardrobe/favorites";
     }
 }

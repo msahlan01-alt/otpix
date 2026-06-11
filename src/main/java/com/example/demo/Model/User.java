@@ -1,5 +1,6 @@
 package com.example.demo.Model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -37,10 +38,12 @@ public class User {
 
     private boolean tutorialSeen = false;
 
+    private String otp;
+    private LocalDateTime otpExpiry;
+    private boolean verified = false;
+
     public User() {
     }
-
-    // ===== Getters & Setters =====
 
     public Long getId() {
         return id;
@@ -104,5 +107,29 @@ public class User {
 
     public void setClothingItems(List<ClothingItem> clothingItems) {
         this.clothingItems = clothingItems;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getOtpExpiry() {
+        return otpExpiry;
+    }
+
+    public void setOtpExpiry(LocalDateTime otpExpiry) {
+        this.otpExpiry = otpExpiry;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 }
